@@ -22,7 +22,7 @@
   <div class="topnav" id="topnav"></div>
 
   <header>
-    <div class="tag" style="color:var(--q)">PART C · 이름이 사는 곳 — CH 11</div>
+    <div class="tag" style="color:var(--hot)">PART C · 이름이 사는 곳 — CH 11</div>
     <h1>클로저</h1>
     <p class="intro">함수 안에서 함수를 만들어 <b>밖으로 돌려주면</b>, 그 안쪽 함수는 자기가 <b>태어난 곳의 이름</b>(바깥 함수의 지역 이름)을 기억해요. 바깥 함수가 끝나 사라진 뒤에도요. 이걸 <b>클로저</b>라고 해요. 핵심 미묘함 — 클로저는 그 이름의 <b>값</b>을 찍어 저장하는 게 아니라 <b>이름(변수) 자체</b>를 기억해, <b>호출되는 순간</b>의 값을 봐요(늦은 바인딩). 이걸 모르면 그 악명 높은 "루프 클로저 함정"에 빠져요.</p>
   </header>
@@ -60,7 +60,7 @@
   <section class="panel" data-panel="2">
     <span class="kicker" style="color:var(--v)">Step 02 — The Loop Closure Trap</span>
     <h2>루프 안에서 만든 함수들이 다 똑같다?</h2>
-    <p class="lead">고전 함정 — 루프에서 함수를 여러 개 만들어요: <code>[lambda: i for i in range(3)]</code>. 기대는 0·1·2를 돌려주는 세 함수죠. 그런데 셋 다 <b>2</b>를 돌려줘요! 셋이 <b>같은 변수 <code>i</code></b> 를 기억하는데, 호출은 루프가 끝난 <b>뒤</b>라 그때 <code>i</code> 는 이미 마지막 값 2거든요(늦은 바인딩). 고치려면? CH07의 그 트릭 — 기본 인자(<code>lambda i=i: i</code>)로 <b>만들 때</b> 값을 박아넣어요. 토글로 비교.</p>
+    <p class="lead">고전 함정 — 루프에서 함수를 여러 개 만들어요: <code>for i in range(3): fns.append(lambda: i)</code>. 기대는 0·1·2를 돌려주는 세 함수죠. 그런데 셋 다 <b>2</b>를 돌려줘요! 셋이 루프 변수 <b>같은 <code>i</code></b> 를 기억하는데(루프 변수는 루프를 감싼 그 방의 이름), 호출은 루프가 끝난 <b>뒤</b>라 그때 <code>i</code> 는 이미 마지막 값 2거든요(늦은 바인딩). 고치려면? CH07의 그 트릭 — 기본 인자(<code>lambda i=i: i</code>)로 <b>만들 때</b> 값을 박아넣어요. 토글로 비교.</p>
     <div class="toggles" id="trapTog">
       <button data-v="bug" class="on">함정 (lambda: i)</button>
       <button data-v="fix">고침 (lambda i=i: i)</button>
@@ -77,7 +77,7 @@
     <p class="lead"><b>클로저</b>는 안쪽 함수가 바깥 함수의 <b>이름(변수)</b>을 붙잡아 기억하는 거예요 — 값을 박제하는 게 아니라 호출 시점에 값을 읽죠(늦은 바인딩). 루프에서 만든 클로저들이 같은 변수를 공유해 다 같은 값을 내는 함정도 여기서 나오고, 회피책은 기본 인자(CH07)예요. 그런데 — 잠깐, 함수를 <b>돌려주고</b>, 변수에 <b>담고</b>, 리스트에 <b>넣었</b>죠? 함수가 그냥 값처럼 다뤄졌어요. 그게 가능한 이유 — 파이썬에선 <b>함수도 객체</b>예요. 다음 PART.</p>
     <div class="scene" id="s3"></div>
     <p class="big" id="lab3"></p>
-    <p class="note" style="margin-top:14px">→ 다음 PART E → <a href="14-first-class.html" style="color:var(--q);font-weight:700">CH 14 · 함수도 값이다</a> · 또는 <a href="12-iterator.html" style="color:var(--q)">CH 12로 순서대로</a></p>
+    <p class="note" style="margin-top:14px">→ 다음 PART D → <a href="12-iterator.html" style="color:var(--q);font-weight:700">CH 12 · 이터러블 ≠ 이터레이터</a> <span style="color:var(--faint)">(함수가 값이라는 점은 PART E CH14에서 본격적으로)</span></p>
   </section>
 
   <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
@@ -152,14 +152,14 @@ const PY=VZ.PY;
   tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
   function render(){ const W=460,H=200; let s='';
     if(view==='bug'){
-      s+=PY.codeLine(20,14,'fns = [lambda: i for i in range(3)]',{w:330,fs:11,color:'var(--hot)'});
+      s+=PY.codeLine(20,14,'for i in range(3): fns.append(lambda: i)',{w:360,fs:10.5,color:'var(--hot)'});
       // three closures all pointing to one shared i
       ['fns[0]','fns[1]','fns[2]'].forEach((f,k)=>{ const x=30+k*100; s+=`<rect x="${x}" y="56" width="86" height="40" rx="9" fill="var(--panel)" stroke="var(--good)" stroke-width="1.3"/><text x="${x+43}" y="80" text-anchor="middle" font-size="10" font-family="monospace" fill="var(--good)">${f}</text>`; s+=PY.ref(x+43,96,230,130,{color:'var(--good)',lw:1.1}); });
       s+=PY.namespace(180,116,{title:'공유 변수',w:110,color:'var(--dead)',rows:[{name:'i',val:'2',hl:true}]});
       s+=`<text x="${W/2}" y="190" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--hot)">셋 다 같은 i를 기억 → 호출 시 다 2 → [2, 2, 2]</text>`;
       document.getElementById('lab2').innerHTML='<b style="color:var(--hot)">함정</b>: 세 클로저가 <b>같은 변수 i</b>를 기억. 호출은 루프 끝난 뒤라 i=2 → 전부 2.';
     } else {
-      s+=PY.codeLine(20,14,'fns = [lambda i=i: i for i in range(3)]',{w:360,fs:11,color:'var(--good)'});
+      s+=PY.codeLine(20,14,'for i in range(3): fns.append(lambda i=i: i)',{w:390,fs:10,color:'var(--good)'});
       ['i=0','i=1','i=2'].forEach((f,k)=>{ const x=30+k*135; s+=`<rect x="${x}" y="60" width="110" height="46" rx="9" fill="var(--panel)" stroke="var(--good)" stroke-width="1.3"/><text x="${x+55}" y="80" text-anchor="middle" font-size="10" font-family="monospace" fill="var(--good)">fns[${k}]</text><text x="${x+55}" y="97" text-anchor="middle" font-size="10" font-family="monospace" font-weight="700" fill="var(--hot)">기본값 ${f}</text>`; });
       s+=`<text x="${W/2}" y="180" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">각자 자기 기본값을 def 때 박아둠 → [0, 1, 2]</text>`;
       document.getElementById('lab2').innerHTML='<b style="color:var(--good)">고침</b>: <code>i=i</code> 기본 인자로 <b>만들 때</b> 각자의 i 값을 박아넣어요(CH07: 기본값은 def 때 평가). → 0·1·2.';

@@ -107,7 +107,7 @@ const PY=VZ.PY;
   play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
   function render(){ const W=460,H=180; const st=steps[i]; let s='';
     s+=PY.codeLine(20,14,'apply_twice(double, 3)',{w:230,fs:11,color:'var(--hot)'});
-    s+=PY.objBox(40,70,{type:'function',value:'double',id:'5600',mutable:false,w:130,h:46});
+    s+=PY.objBox(40,70,{type:'function',value:'double (×2)',id:'5600',mutable:false,w:130,h:46});
     s+=`<text x="105" y="130" text-anchor="middle" font-size="9.5" font-family="monospace" fill="var(--faint)">인자 f로 들어감</text>`;
     s+=PY.arrow(170,92,250,92,{color:'var(--hot)',lw:1.6});
     const vals=['3','6','12'];

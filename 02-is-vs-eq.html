@@ -50,7 +50,7 @@
     <h2>이름표 둘이 한 객체를 가리키면</h2>
     <p class="lead">이번엔 <code>b = a</code> — CH01에서 봤듯 새 객체가 아니라 <b>같은 객체에 이름표 추가</b>예요. 그럼 둘은 같은 객체(같은 id)니 <code>a is b</code> 도 참, 당연히 <code>a == b</code> 도 참. 토글로 두 상황(따로 만듦 vs 같은 객체)을 나란히 비교해 보세요 — <code>is</code> 의 결과가 갈려요.</p>
     <div class="toggles" id="sameTog">
-      <button data-v="two" class="on">따로 만듦 (b=[1,2])</button>
+      <button data-v="two" class="on">따로 만듦 (b=[1, 2])</button>
       <button data-v="one">같은 객체 (b=a)</button>
     </div>
     <div class="scene" id="s1"></div>
@@ -96,9 +96,9 @@ const PY=VZ.PY;
 // ===== STEP 0 =====
 (function(){ const W=460,H=200; let s='';
   s+=PY.codeLine(20,14,'a = [1, 2]',{w:120}); s+=PY.codeLine(160,14,'b = [1, 2]',{w:120});
-  s+=PY.nameLabel(40,70,'a',{}); s+=PY.objBox(40,110,{type:'list',value:'[1,2]',id:'4401',mutable:true,w:130,h:56});
+  s+=PY.nameLabel(40,70,'a',{}); s+=PY.objBox(40,110,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:130,h:56});
   s+=PY.ref(60,98,90,110,{});
-  s+=PY.nameLabel(300,70,'b',{}); s+=PY.objBox(290,110,{type:'list',value:'[1,2]',id:'4408',mutable:true,w:130,h:56});
+  s+=PY.nameLabel(300,70,'b',{}); s+=PY.objBox(290,110,{type:'list',value:'[1, 2]',id:'4408',mutable:true,w:130,h:56});
   s+=PY.ref(320,98,350,110,{});
   s+=PY.chip(230,86,'a == b → True',{color:'var(--good)',minW:120});
   s+=PY.chip(230,112,'a is b → False',{color:'var(--dead)',minW:120});
@@ -112,14 +112,14 @@ const PY=VZ.PY;
   tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
   function render(){ const W=460,H=200; let s='';
     if(view==='two'){
-      s+=PY.codeLine(20,14,'a = [1,2]; b = [1,2]',{w:230,color:'var(--hot)'});
-      s+=PY.nameLabel(40,66,'a',{}); s+=PY.objBox(30,104,{type:'list',value:'[1,2]',id:'4401',mutable:true,w:120,h:52}); s+=PY.ref(58,94,80,104,{});
-      s+=PY.nameLabel(330,66,'b',{}); s+=PY.objBox(300,104,{type:'list',value:'[1,2]',id:'4408',mutable:true,w:120,h:52}); s+=PY.ref(352,94,360,104,{});
+      s+=PY.codeLine(20,14,'a = [1, 2]; b = [1, 2]',{w:230,color:'var(--hot)'});
+      s+=PY.nameLabel(40,66,'a',{}); s+=PY.objBox(30,104,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:120,h:52}); s+=PY.ref(58,94,80,104,{});
+      s+=PY.nameLabel(330,66,'b',{}); s+=PY.objBox(300,104,{type:'list',value:'[1, 2]',id:'4408',mutable:true,w:120,h:52}); s+=PY.ref(352,94,360,104,{});
       s+=PY.chip(230,96,'a is b → False',{color:'var(--dead)',minW:130});
       document.getElementById('lab1').innerHTML='따로 만들면 객체가 둘(id 4401·4408). <b style="color:var(--dead)">a is b → False</b>. 값만 같을 뿐 다른 객체.';
     } else {
-      s+=PY.codeLine(20,14,'a = [1,2]; b = a',{w:200,color:'var(--hot)'});
-      s+=PY.objBox(180,104,{type:'list',value:'[1,2]',id:'4401',mutable:true,w:120,h:52});
+      s+=PY.codeLine(20,14,'a = [1, 2]; b = a',{w:200,color:'var(--hot)'});
+      s+=PY.objBox(180,104,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:120,h:52});
       s+=PY.nameLabel(60,80,'a',{}); s+=PY.ref(106,94,180,120,{});
       s+=PY.nameLabel(60,128,'b',{}); s+=PY.ref(106,142,180,134,{});
       s+=PY.chip(360,96,'a is b → True',{color:'var(--good)',minW:120});
@@ -144,11 +144,15 @@ const PY=VZ.PY;
       s+=`<text x="370" y="118" text-anchor="middle" font-size="10" font-family="monospace" fill="var(--dead)">⚠ 우연일 뿐 · 규칙 아님</text>`;
       document.getElementById('lab2').innerHTML='파이썬이 작은 수를 <b>재사용</b>해서 우연히 같은 객체 → is가 True. <b style="color:var(--dead)">이걸 규칙으로 믿지 마세요.</b>';
     } else if(view==='big'){
-      s+=PY.codeLine(20,14,'a = 257; b = 257',{w:210,color:'var(--hot)'});
-      s+=PY.nameLabel(40,70,'a',{}); s+=PY.objBox(30,106,{type:'int',value:'257',id:'9001',mutable:false,w:110,h:50}); s+=PY.ref(58,98,70,106,{});
-      s+=PY.nameLabel(340,70,'b',{}); s+=PY.objBox(310,106,{type:'int',value:'257',id:'9050',mutable:false,w:110,h:50}); s+=PY.ref(362,98,370,106,{});
-      s+=PY.chip(230,96,'a is b → 환경 따라 다름!',{color:'var(--dead)',minW:170});
-      document.getElementById('lab2').innerHTML='조금 큰 수는 재사용 안 해 보통 다른 객체 → is가 False(환경 따라 변덕). 같은 코드인데 256과 257이 다르게? — 그래서 <b>값 비교엔 ==</b>.';
+      s+=PY.codeLine(20,14,'a = 257    b = 257',{w:210,color:'var(--hot)'});
+      s+=PY.nameLabel(40,72,'a',{}); s+=PY.nameLabel(40,118,'b',{});
+      s+=PY.objBox(220,84,{type:'int',value:'257',id:'?',mutable:false,w:120,h:54});
+      s+=PY.ref(86,86,220,104,{}); s+=PY.ref(86,132,220,118,{});
+      s+=`<text x="285" y="78" text-anchor="middle" font-size="22" font-weight="700" fill="var(--dead)">?</text>`;
+      s+=PY.chip(290,150,'a is b → 예측 불가',{color:'var(--dead)',minW:150});
+      s+=`<text x="420" y="110" text-anchor="end" font-size="9" font-family="monospace" fill="var(--faint)">같은 객체일 수도,</text>`;
+      s+=`<text x="420" y="124" text-anchor="end" font-size="9" font-family="monospace" fill="var(--faint)">별개일 수도</text>`;
+      document.getElementById('lab2').innerHTML='257쯤이면 재사용이 <b>보장 안 돼요</b> — 같은 줄/함수에선 합쳐져 True, 떨어지면 False가 되기도. <b style="color:var(--dead)">예측 불가</b>라서 값 비교엔 절대 == (is 아님).';
     } else {
       s+=PY.codeLine(20,14,'if x is None:',{w:160,color:'var(--hot)'});
       s+=PY.objBox(180,96,{type:'NoneType',value:'None',id:'단 하나',mutable:false,w:130,h:54});

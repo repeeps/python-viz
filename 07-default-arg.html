@@ -38,7 +38,7 @@
   <section class="panel show" data-panel="0">
     <span class="kicker" style="color:var(--q)">Step 00 — The Accumulating Mystery</span>
     <h2>부를 때마다 쌓인다</h2>
-    <p class="lead"><code>def add(x, items=[]):</code> — 매번 빈 리스트로 시작할 것 같죠? <code>add(1)</code> 을 세 번 부르면 <code>[1]</code>, <code>[1]</code>, <code>[1]</code> 이 나올 거라 기대해요. 그런데 실제론 <code>[1]</code>, <code>[1, 1]</code>, <code>[1, 1, 1]</code> 로 <b>쌓여요</b>. 버튼으로 직접 호출해 보세요 — 빈 리스트가 매번 새로 안 생기고 이전 결과가 남아 있어요.</p>
+    <p class="lead"><code>def add(v, items=[]):</code> — 매번 빈 리스트로 시작할 것 같죠? <code>add(1)</code> 을 세 번 부르면 <code>[1]</code>, <code>[1]</code>, <code>[1]</code> 이 나올 거라 기대해요. 그런데 실제론 <code>[1]</code>, <code>[1, 1]</code>, <code>[1, 1, 1]</code> 로 <b>쌓여요</b>. 버튼으로 직접 호출해 보세요 — 빈 리스트가 매번 새로 안 생기고 이전 결과가 남아 있어요.</p>
     <div class="ctl" id="play0"></div>
     <div class="scene" id="s0"></div>
     <p class="big" id="lab0"></p>
@@ -59,7 +59,7 @@
   <section class="panel" data-panel="2">
     <span class="kicker" style="color:var(--good)">Step 02 — Fix It with None</span>
     <h2>None 관용구로 고친다</h2>
-    <p class="lead">정석 해법: 기본값을 <b>불변인 <code>None</code></b>으로 두고, 함수 <b>안에서</b> 새 리스트를 만들어요. <code>def add(x, items=None): if items is None: items = []</code>. 함수 몸통은 <b>호출할 때마다</b> 실행되니, <code>items = []</code> 도 매번 실행돼 <b>매 호출 새 리스트</b>가 생기죠. 토글로 함정 버전과 고친 버전을 비교하세요 — 같은 세 번 호출인데 결과가 갈려요.</p>
+    <p class="lead">정석 해법: 기본값을 <b>불변인 <code>None</code></b>으로 두고, 함수 <b>안에서</b> 새 리스트를 만들어요. <code>def add(v, items=None): if items is None: items = []</code>. 함수 몸통은 <b>호출할 때마다</b> 실행되니, <code>items = []</code> 도 매번 실행돼 <b>매 호출 새 리스트</b>가 생기죠. 토글로 함정 버전과 고친 버전을 비교하세요 — 같은 세 번 호출인데 결과가 갈려요.</p>
     <div class="toggles" id="fixTog">
       <button data-v="bug" class="on">함정 (items=[])</button>
       <button data-v="fix">고침 (items=None)</button>
@@ -95,7 +95,7 @@ const PY=VZ.PY;
   const play=document.getElementById('play0');
   play.innerHTML=`<button class="btn" id="call0">add(1) 호출 ▶</button><button class="btn" id="reset0">처음으로</button><span class="note" id="cnt0" style="margin-left:8px"></span>`;
   function render(){ const W=460,H=170; const st=calls[i]; let s='';
-    s+=PY.codeLine(20,14,'def add(x, items=[]): items.append(x); return items',{w:420,fs:11});
+    s+=PY.codeLine(20,14,'def add(v, items=[]): items.append(v); return items',{w:420,fs:11});
     s+=`<text x="30" y="68" font-size="11" font-family="monospace" fill="var(--muted)">호출 ${i}회 →</text>`;
     s+=PY.objBox(160,52,{type:'list',value:st.val,id:'한 개뿐',mutable:true,w:160,h:54,hl:i>0});
     s+=`<text x="${W/2}" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="${i>1?'var(--hot)':'var(--muted)'}">기대: 매번 [1] · 현실: ${st.val}</text>`;
@@ -112,7 +112,7 @@ const PY=VZ.PY;
 
 // ===== STEP 1 =====
 (function(){ const W=460,H=200; let s='';
-  s+=PY.codeLine(20,14,'def add(x, items=[]): ...',{w:260,color:'var(--hot)'});
+  s+=PY.codeLine(20,14,'def add(v, items=[]): ...',{w:260,color:'var(--hot)'});
   s+=`<text x="30" y="60" font-size="10" font-family="monospace" fill="var(--muted)">def 실행 시점(딱 한 번)</text>`;
   // function object holding the one default
   s+=`<rect x="30" y="70" width="150" height="78" rx="12" fill="var(--panel)" stroke="var(--v)" stroke-width="1.5"/>`;
@@ -134,14 +134,14 @@ const PY=VZ.PY;
   tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
   function render(){ const W=460,H=200; let s='';
     if(view==='bug'){
-      s+=PY.codeLine(20,14,'def add(x, items=[]):',{w:230,color:'var(--hot)'});
+      s+=PY.codeLine(20,14,'def add(v, items=[]):',{w:230,color:'var(--hot)'});
       s+=PY.objBox(170,70,{type:'list',value:'[1, 1, 1]',id:'기본 1개',mutable:true,w:140,h:50,hl:true});
       s+=`<text x="30" y="140" font-size="10.5" font-family="monospace" fill="var(--hot)">호출1·2·3 →</text>`;
       s+=PY.ref(150,134,210,120,{color:'var(--hot)',dash:'4 3'});
       s+=`<text x="${W/2}" y="180" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--hot)">[1] → [1,1] → [1,1,1] (한 객체 공유)</text>`;
       document.getElementById('lab2').innerHTML='<b style="color:var(--hot)">함정</b>: 모든 호출이 한 기본 리스트를 공유 → 누적.';
     } else {
-      s+=PY.codeLine(20,14,'def add(x, items=None):',{w:250,color:'var(--good)'});
+      s+=PY.codeLine(20,14,'def add(v, items=None):',{w:250,color:'var(--good)'});
       s+=PY.codeLine(40,46,'if items is None: items = []',{w:280,fs:11,color:'var(--good)'});
       s+=PY.objBox(40,96,{type:'list',value:'[1]',id:'호출1',mutable:true,w:90,h:42});
       s+=PY.objBox(180,96,{type:'list',value:'[1]',id:'호출2',mutable:true,w:90,h:42});

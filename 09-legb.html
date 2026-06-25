@@ -22,7 +22,7 @@
   <div class="topnav" id="topnav"></div>
 
   <header>
-    <div class="tag" style="color:var(--q)">PART C · 이름이 사는 곳 — CH 09</div>
+    <div class="tag" style="color:var(--hot)">PART C · 이름이 사는 곳 — CH 09</div>
     <h1>LEGB — 이름 찾는 순서</h1>
     <p class="intro">코드에서 이름 <code>x</code> 를 쓰면, 파이썬은 여러 방(네임스페이스) 중 어디서 찾을까요? 정해진 순서가 있어요 — <b>L</b>ocal(지금 함수) → <b>E</b>nclosing(나를 감싼 바깥 함수) → <b>G</b>lobal(모듈 전역) → <b>B</b>uiltin(파이썬 기본 제공: <code>len</code>·<code>print</code> 등). 안쪽부터 바깥으로 차례로 뒤져, <b>처음 찾은 방의 이름표</b>를 써요. 그래서 안쪽에 같은 이름이 있으면 바깥 것을 <b>가려요</b>(shadowing).</p>
   </header>
@@ -140,7 +140,7 @@ const LABELS=[
       document.getElementById('lab2').innerHTML='지역에 n이 없으면 통과 → G에서 <b style="color:var(--good)">전역 n=1</b>을 찾아 써요.';
     } else {
       layers=[{label:'L · 지역',names:'len = 5  ← 내장을 덮음!',found:true},{label:'G · 전역',names:''},{label:'B · 내장',names:'len(...) (가려짐·못 씀)'}];
-      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">사고</b>: 변수명을 <code>len</code>으로 쓰면 내장 <code>len()</code>이 가려져요 → <code>len(x)</code> 호출 시 "int는 호출 불가" 에러. 내장 이름은 변수명으로 피하세요.';
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">사고</b>: 이 방에서 변수명을 <code>len</code>으로 쓰면 내장 <code>len()</code>이 가려져요 → <code>len(x)</code> 호출 시 <code>TypeError: \'int\' object is not callable</code>. 내장 이름은 변수명으로 피하세요.';
     }
     document.getElementById('s2').innerHTML=PY.svg(W,H,PY.scopes(110,18,{layers,w:240,lh:46}),'가림');
   }
