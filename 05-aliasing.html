@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 · 별칭 — 한 객체, 여러 이름 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--hot)">PART B · 별칭과 복사 — CH 05</div>
+    <h1>별칭 — 한 객체, 여러 이름</h1>
+    <p class="intro"><code>y = x</code> 는 리스트를 복사하지 않아요 — 같은 객체에 이름표 y를 하나 더 붙일 뿐이죠(CH01). 그럼 둘은 <b>별칭</b>(같은 객체의 다른 이름)이고, <b>한쪽으로 제자리 변경하면 다른 쪽에도 그대로 보여요</b>. 이게 파이썬 초보의 1번 버그예요. 그리고 결정적 — <b>함수에 인자를 넘기는 것도 똑같은 이름표 붙이기</b>라서, 함수 안에서 리스트를 바꾸면 바깥 리스트도 바뀝니다.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · y = x</button>
+    <button data-s="1">01 · 함수 인자도 별칭</button>
+    <button data-s="2">02 · 값? 참조? 둘 다 아님</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — y = x Is an Alias</span>
+    <h2>한쪽을 바꾸면 다른 쪽도 바뀐다</h2>
+    <p class="lead"><code>x = [1, 2]</code> 다음 <code>y = x</code> — 이제 x와 y는 <b>같은 객체</b>를 가리키는 두 이름표예요(별칭). 여기서 <code>x.append(3)</code> 으로 제자리 변경을 하면? y로 봐도 <code>[1, 2, 3]</code> 이에요 — y를 건드린 적도 없는데! 버튼으로 따라가 보세요. 둘이 같은 객체를 보고 있으니 당연한 일이지만, 처음엔 깜짝 놀라죠.</p>
+    <div class="ctl" id="play0"></div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 별칭 = 같은 객체의 여러 이름. 제자리 변경은 모든 이름표에 보임.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Arguments Are Aliases Too</span>
+    <h2>함수에 넘기는 것 = 이름표 붙이기</h2>
+    <p class="lead">함수 호출 <code>f(data)</code> 는 마법이 아니에요 — 매개변수 이름(<code>lst</code>)을 인자 객체에 <b>이름표로 붙이는</b> 것, 즉 <code>lst = data</code> 와 똑같아요. 그래서 <code>data</code> 와 <code>lst</code> 는 별칭! 함수 안에서 <code>lst.append(99)</code> 로 제자리 변경하면 — 바깥 <code>data</code> 도 바뀌어 있어요. "분명 안 건드렸는데 리스트가 변했다"는 미스터리의 정체예요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 인자 전달 = 바인딩. 함수 안 제자리 변경은 바깥 객체에 그대로 반영.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Not "By Value" or "By Reference"</span>
+    <h2>"값/참조 전달" 이분법은 잊자</h2>
+    <p class="lead">다른 언어에서 온 사람은 "파이썬은 값 전달이야, 참조 전달이야?"를 묻지만 — <b>둘 다 아니에요</b>. 정답은 "객체에 이름표 붙이기"(바인딩). 그래서 함수 안에서 <b>제자리 변경</b>(<code>lst.append</code>)은 바깥에 보이지만, <b>재바인딩</b>(<code>lst = [...]</code>)은 안 보여요 — 재바인딩은 함수 안 지역 이름표만 옮기거든요(CH04). 토글로 두 경우를 비교하세요. 이게 "어떨 땐 바뀌고 어떨 땐 안 바뀌는" 혼란의 진짜 답이에요.</p>
+    <div class="toggles" id="modeTog">
+      <button data-v="mutate" class="on">함수 안 제자리 변경</button>
+      <button data-v="rebind">함수 안 재바인딩</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 제자리 변경=바깥에 보임 / 재바인딩=지역 이름표만 이동(바깥 그대로). 값/참조 이분법이 아니라 바인딩.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><code>y = x</code> 와 함수 인자 전달은 둘 다 <b>같은 객체에 이름표 붙이기</b>(별칭). 별칭에 <b>제자리 변경</b>을 하면 모든 이름표에 보이고, <b>재바인딩</b>은 그 이름표 하나만 옮겨 다른 데엔 안 보여요. "값/참조 전달"이 아니라 "바인딩"으로 보면 전부 일관돼요. 그럼 — 정말로 독립된 사본이 필요하면 어떻게 할까요? "복사하면 되지" 싶지만, 거기에도 함정이 있어요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="06-copy.html" style="color:var(--q);font-weight:700">CH 06 · 얕은 복사 vs 깊은 복사</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '05 · 별칭');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+function twoTags(W, val, note, noteCol){ let s='';
+  s+=PY.objBox(250,80,{type:'list',value:val,id:'4401',mutable:true,w:140,h:56});
+  s+=PY.nameLabel(70,62,'x',{}); s+=PY.ref(116,76,250,98,{});
+  s+=PY.nameLabel(70,118,'y',{}); s+=PY.ref(116,132,250,118,{});
+  if(note) s+=`<text x="${W/2}" y="170" text-anchor="middle" font-size="11" font-family="monospace" fill="${noteCol||'var(--good)'}">${note}</text>`;
+  return s;
+}
+
+// ===== STEP 0 =====
+(function(){ const steps=[
+    {t:'x = [1, 2]; y = x', val:'[1, 2]', note:'x·y 둘 다 같은 객체(id 4401)'},
+    {t:'x.append(3)', val:'[1, 2, 3]', note:'x로 바꿨는데 y로 봐도 [1,2,3] !', col:'var(--hot)'}
+  ];
+  let i=0;
+  const play=document.getElementById('play0');
+  play.innerHTML=`<button class="btn" id="prev0">◀ 이전</button><button class="btn" id="next0">다음 ▶</button><span class="note" id="cnt0" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=190; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:200,color:'var(--hot)'});
+    s+=twoTags(W, st.val, st.note, st.col);
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'별칭');
+    document.getElementById('cnt0').textContent=`${i+1} / 2`;
+    document.getElementById('lab0').innerHTML = i===0
+      ? 'y = x 로 같은 객체에 이름표 둘. <b>별칭</b>이에요.'
+      : 'x로 제자리 변경했는데 <b style="color:var(--hot)">y로 봐도 바뀌어</b> 있어요 — 같은 객체니까. 이게 1번 버그.';
+  }
+  document.getElementById('next0').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev0').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'data = [1, 2]', val:'[1, 2]', inside:false, d:'바깥에 리스트와 이름표 data'},
+    {t:'f(data)  →  lst = data', val:'[1, 2]', inside:true, d:'호출 = 매개변수 lst를 같은 객체에 붙임(별칭)'},
+    {t:'lst.append(99)  (함수 안)', val:'[1, 2, 99]', inside:true, d:'제자리 변경 → 바깥 data도 바뀜!', col:'var(--hot)'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=200; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:280,color:'var(--hot)'});
+    s+=PY.objBox(250,90,{type:'list',value:st.val,id:'4401',mutable:true,w:140,h:54});
+    s+=PY.nameLabel(60,70,'data',{}); s+=PY.ref(120,84,250,106,{});
+    if(st.inside){ s+=PY.nameLabel(60,128,'lst',{color:'var(--v)'}); s+=PY.ref(112,142,250,124,{color:'var(--v)'});
+      s+=`<text x="86" y="170" font-size="9" font-family="monospace" fill="var(--faint)">(함수 안 지역)</text>`; }
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'함수 인자 별칭');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=`<b style="color:${st.col||'var(--hot)'}">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='mutate';
+  const tog=document.getElementById('modeTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=210; let s='';
+    s+=PY.nameLabel(60,40,'data',{}); s+=`<text x="64" y="78" font-size="9" font-family="monospace" fill="var(--faint)">(바깥)</text>`;
+    if(view==='mutate'){
+      s+=PY.codeLine(150,12,'lst.append(9)',{w:150,color:'var(--good)'});
+      s+=PY.objBox(250,70,{type:'list',value:'[1, 2, 9]',id:'4401',mutable:true,w:140,h:52});
+      s+=PY.ref(120,52,250,90,{});
+      s+=PY.nameLabel(60,150,'lst',{color:'var(--v)'}); s+=PY.ref(112,150,250,108,{color:'var(--v)'});
+      s+=`<text x="${W/2}" y="196" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">제자리 변경 → 바깥 data도 [1,2,9] (보임)</text>`;
+      document.getElementById('lab2').innerHTML='함수 안 <b style="color:var(--good)">제자리 변경</b>은 같은 객체를 건드리니 바깥 data에 그대로 보여요.';
+    } else {
+      s+=PY.codeLine(150,12,'lst = [9, 9]',{w:150,color:'var(--hot)'});
+      s+=PY.objBox(250,60,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:130,h:46});
+      s+=PY.ref(120,52,250,78,{});
+      s+=PY.objBox(250,140,{type:'list',value:'[9, 9]',id:'4490',mutable:true,w:130,h:46});
+      s+=PY.nameLabel(60,150,'lst',{color:'var(--v)'}); s+=PY.ref(112,158,250,160,{color:'var(--v)'});
+      s+=`<text x="${W/2}" y="200" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--hot)">재바인딩 → 지역 lst만 새 객체로. data는 [1,2] 그대로</text>`;
+      document.getElementById('lab2').innerHTML='함수 안 <b style="color:var(--hot)">재바인딩</b>은 지역 이름표 lst만 새 객체로 옮겨요(CH04). 바깥 data는 안 변함.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'값? 참조?');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">전부 "바인딩"으로 일관</text>`;
+  const rows=[['별칭','y=x·인자 전달 = 같은 객체에 이름표','var(--q)'],['그래서','제자리 변경=공유로 보임 / 재바인딩=안 보임','var(--hot)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='독립 사본이 필요하면? 복사에도 함정이 있어요 — 다음 챕터.';
+})();
+</script>
+</body>
+</html>

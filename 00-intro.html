@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0번 · 변수는 상자가 아니다 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  .gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+  .gcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .gcard h4{margin:0 0 4px;font-size:13px;font-family:'JetBrains Mono',monospace}
+  .gcard p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--hot)">0번 입문</div>
+    <h1>변수는 상자가 아니다</h1>
+    <p class="intro">대부분의 입문서는 "변수 = 값을 담는 <b>상자</b>"라고 가르쳐요. 파이썬에선 이 그림이 함정의 근원이에요. 파이썬의 진짜 모델은 — 값(객체)이 어딘가에 있고, 변수는 그 객체에 붙이는 <b>이름표</b>예요. 대입은 담는 게 아니라 <b>이름표를 붙이는 것</b>. 이 한 장면만 바꿔 끼우면 별칭·복사·기본 인자 같은 파이썬의 악명 높은 함정들이 전부 자연스럽게 풀려요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 상자 모델을 깨자</button>
+    <button data-s="1">01 · 이름표와 객체</button>
+    <button data-s="2">02 · 용어 한 장</button>
+    <button data-s="3">03 · 코스맵</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--hot)">Step 00 — Break the Box Model</span>
+    <h2>"상자에 담는다"가 아니다</h2>
+    <p class="lead">토글로 두 그림을 비교해 보세요. <b>상자 모델</b>: 변수 x라는 상자 안에 값 7이 들어 있다 — 많은 언어가 이렇게 동작하고, 입문서도 이렇게 가르치죠. <b>이름표 모델</b>(파이썬): 7이라는 객체가 따로 있고, x는 거기 붙은 이름표예요. 평범한 숫자 하나일 땐 둘이 똑같아 보여요. 하지만 다음 단계부터 이 차이가 모든 걸 가릅니다.</p>
+    <div class="toggles" id="modelTog">
+      <button data-v="box" class="on">상자 모델 (틀림)</button>
+      <button data-v="tag">이름표 모델 (파이썬)</button>
+    </div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 파이썬: 대입 = 객체에 이름표 붙이기. 변수는 값을 "담지" 않아요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--q)">Step 01 — Tags and Objects</span>
+    <h2>한 객체에 이름표 여럿</h2>
+    <p class="lead">이름표 모델의 진짜 힘은 여기서 나와요. <code>x = [1, 2]</code> 로 리스트 객체에 이름표 x를 붙이고, <code>y = x</code> 를 하면 — 새 리스트가 생기는 게 아니라 <b>같은 객체에 이름표 y가 하나 더</b> 붙어요. 버튼으로 따라가 보세요. 그리고 어떤 객체에 이름표가 하나도 안 남으면? 파이썬이 조용히 <b>치워요</b>(메모리 회수).</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ y = x 는 복사가 아니라 "같은 객체에 이름표 추가". 이름표 0개 객체는 청소돼요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Vocabulary</span>
+    <h2>앞으로 쓸 말 네 개</h2>
+    <p class="lead">이 트랙에서 계속 나올 핵심 용어예요. 지금 다 외울 필요 없어요 — 그림으로 반복해서 만나게 됩니다.</p>
+    <div class="gloss" id="gloss"></div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 객체(값)·이름(이름표)·참조(이름→객체 화살표)·가변/불변(내용이 바뀌나).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Course Map</span>
+    <h2>어디로 가나</h2>
+    <p class="lead">다섯 PART. 이름표·객체로 시작해(A), 그 위에서 파이썬의 악명 높은 함정들을 풀고(B 별칭·복사, C 스코프), 게으른 흐름(D)과 "모든 게 객체"(E)로 마무리해요. <b>B와 C가 두 기둥</b> — 초보자가 가장 자주 빠지는 함정이 다 거기서 나오거든요.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 시작 → <a href="01-name-tag.html" style="color:var(--q);font-weight:700">CH 01 · 이름표 붙이기</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '0번 · 변수는 상자가 아니다');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0: box vs tag =====
+(function(){ let view='box';
+  const tog=document.getElementById('modelTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=180; let s='';
+    s+=PY.codeLine(20,18,'x = 7',{w:90});
+    if(view==='box'){
+      // a box labeled x containing 7
+      s+=`<rect x="160" y="70" width="120" height="64" rx="12" fill="var(--panel)" stroke="var(--slate)" stroke-width="1.6"/>`;
+      s+=`<text x="220" y="60" text-anchor="middle" font-size="13" font-family="monospace" font-weight="700" fill="var(--slate)">x (상자)</text>`;
+      s+=`<text x="220" y="110" text-anchor="middle" font-size="22" font-family="monospace" font-weight="700" fill="var(--ink)">7</text>`;
+      s+=`<text x="${W/2}" y="165" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">값이 변수 안에 들어 있다 (다른 언어·입문서)</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--dead)">상자 모델</b>: x라는 상자가 7을 품고 있다고 봐요. 직관적이지만 — 파이썬은 이렇게 동작하지 않아요.';
+    } else {
+      s+=PY.nameLabel(150,90,'x',{});
+      s+=PY.objBox(280,72,{type:'int',value:'7',id:'…',mutable:false,w:110,h:56});
+      s+=PY.ref(196,104,280,100,{});
+      s+=`<text x="${W/2}" y="165" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">7은 따로 있는 객체, x는 거기 붙은 이름표 (파이썬)</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--good)">이름표 모델</b>: 7이라는 <b>객체</b>가 따로 있고, x는 거기 붙은 <b>이름표</b>예요. 대입은 담기가 아니라 이름표 붙이기.';
+    }
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'상자 vs 이름표');
+  }
+  render();
+})();
+
+// ===== STEP 1: two tags one object + GC =====
+(function(){ const steps=[
+    {t:'x = [1, 2]', d:'리스트 객체가 생기고 이름표 x가 붙어요', tags:['x'], obj:true, gc:false},
+    {t:'y = x', d:'새 리스트가 아니라 같은 객체에 이름표 y 추가', tags:['x','y'], obj:true, gc:false},
+    {t:'x = 99', d:'x를 다른 객체로 옮겨도, 리스트엔 아직 y가 붙어 있어요', tags:['y'], obj:true, gc:false, other:true},
+    {t:'del y', d:'마지막 이름표마저 떼면 → 아무도 안 가리킴 → 청소', tags:[], obj:true, gc:true}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=200; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,16,st.t,{w:130,color:'var(--hot)'});
+    // the list object
+    s+=PY.objBox(280,80,{type:'list',value:'[1, 2]',mutable:true,w:120,h:56,dim:st.gc});
+    // tags pointing in
+    st.tags.forEach((t,k)=>{ const ty=70+k*44; s+=PY.nameLabel(70,ty,t,{}); s+=PY.ref(116,ty+14,280,108,{}); });
+    if(st.other){ s+=PY.nameLabel(70,158,'x',{color:'var(--q)'}); s+=PY.objBox(180,150,{type:'int',value:'99',mutable:false,w:80,h:38}); s+=PY.ref(116,172,180,169,{}); }
+    if(st.gc){ s+=`<text x="340" y="158" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">🧹 이름표 0개 → 청소</text>`; }
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'이름표와 객체');
+    document.getElementById('cnt1').textContent=`${i+1} / ${steps.length}`;
+    document.getElementById('lab1').innerHTML=`<b style="color:var(--hot)">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2: glossary =====
+(function(){
+  const items=[
+    ['객체 (object)','메모리에 있는 실제 값. 모든 것이 객체 — 숫자도, 리스트도, 함수도.','var(--good)'],
+    ['이름 (name)','객체에 붙이는 이름표. 변수란 곧 이름. 대입으로 붙고, del로 뗌.','var(--q)'],
+    ['참조 (reference)','이름이 객체를 가리키는 화살표. 한 객체에 여러 참조가 가능.','var(--hot)'],
+    ['가변 / 불변','객체 내용이 바뀔 수 있나(리스트=가변) 없나(숫자·문자열=불변).','var(--v)']
+  ];
+  document.getElementById('gloss').innerHTML=items.map(it=>
+    `<div class="gcard" style="border-color:${it[2]}"><h4 style="color:${it[2]}">${it[0]}</h4><p>${it[1]}</p></div>`).join('');
+  const W=460,H=120;
+  let s=PY.nameLabel(40,46,'x',{}); s+=PY.ref(86,60,200,60,{color:'var(--hot)'});
+  s+=PY.objBox(200,34,{type:'list',value:'[1, 2]',mutable:true,w:120,h:52});
+  s+=`<text x="60" y="96" font-size="9.5" font-family="monospace" fill="var(--q)">이름</text>`;
+  s+=`<text x="143" y="50" font-size="9.5" font-family="monospace" fill="var(--hot)">참조</text>`;
+  s+=`<text x="260" y="100" font-size="9.5" font-family="monospace" fill="var(--good)">객체(가변)</text>`;
+  document.getElementById('s2').innerHTML=PY.svg(W,H,s,'용어 한 장');
+  document.getElementById('lab2').innerHTML='이 네 단어로 파이썬의 거의 모든 "왜?"를 설명할 수 있어요. 그림이 곧 정의예요.';
+})();
+
+// ===== STEP 3: course map =====
+(function(){ const W=460,H=210;
+  const parts=[['A','이름과 객체','var(--q)',false],['B','별칭과 복사 · 기둥','var(--hot)',true],['C','스코프 · 기둥','var(--hot)',true],['D','게으른 흐름','var(--v)',false],['E','모든 게 객체','var(--good)',false]];
+  let s='';
+  parts.forEach((p,i)=>{ const y=14+i*38; s+=`<rect x="20" y="${y}" width="${W-40}" height="32" rx="8" fill="var(--panel)" stroke="${p[2]}" stroke-width="${p[3]?2:1.2}"/>`;
+    s+=`<text x="36" y="${y+21}" font-size="13" font-family="monospace" font-weight="700" fill="${p[2]}">${p[0]}</text>`;
+    s+=`<text x="64" y="${y+21}" font-size="12.5" font-family="'Pretendard'" fill="var(--ink)">${p[1]}</text>`;
+    if(p[3]) s+=`<text x="${W-34}" y="${y+21}" text-anchor="end" font-size="10" font-family="monospace" fill="var(--hot)">★ 함정 多</text>`;
+  });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'코스맵');
+  document.getElementById('lab3').innerHTML='이름표 하나로 시작해서, 별칭·복사·스코프 함정을 정복하고, 게으른 흐름과 객체성까지. 출발해요.';
+})();
+</script>
+</body>
+</html>

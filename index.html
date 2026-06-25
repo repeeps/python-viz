@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .hero{text-align:center; padding:30px 0 10px;}
+  .hero .tag{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.25em; text-transform:uppercase; color:var(--q);}
+  .hero h1{font-size:clamp(30px,6vw,52px); font-weight:800; letter-spacing:-.03em; margin:14px 0 12px; line-height:1.05;
+    background:linear-gradient(100deg,#fff,#9bb6ff 55%,var(--v)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero p{color:var(--muted); max-width:680px; margin:0 auto; font-size:16px;}
+  .seclabel{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  .seclabel b{color:var(--hot);}
+  .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
+  .ccard{display:block; text-decoration:none; background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:22px; transition:.22s; position:relative; overflow:hidden;}
+  .ccard::before{content:''; position:absolute; inset:0 auto 0 0; width:4px; background:var(--accent,var(--q)); opacity:.8;}
+  .ccard:hover{transform:translateY(-4px); border-color:var(--accent,var(--q)); box-shadow:0 14px 36px rgba(0,0,0,.35);}
+  .ccard .num{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent,var(--q)); font-weight:700;}
+  .ccard h3{margin:8px 0 8px; font-size:19px; color:var(--ink); letter-spacing:-.01em;}
+  .ccard p{margin:0; font-size:13.5px; color:var(--muted); line-height:1.6;}
+  .ccard .chips{margin-top:14px; display:flex; gap:6px; flex-wrap:wrap;}
+  .ccard .chip{font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:6px;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--muted);}
+  .foot{margin-top:60px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">수식·코드 없는 직관 입문 · 0번 + 16챕터</div>
+    <h1>파이썬, 눈으로 보기</h1>
+    <p>파이썬은 "변수에 값을 담는다"가 아니에요 — <b>객체에 이름표를 붙이는 것</b>이죠. 이 작은 차이를 모르면 별칭 버그, 가변 기본 인자, 루프 속 클로저 같은 함정에 계속 빠져요. 이 트랙은 문법을 가르치지 않아요. 대신 <b>코드 한 줄을 쓸 때 메모리에서 실제로 무슨 일이 일어나는지</b> — 이름표가 어떤 객체를 가리키고, 무엇이 바뀌고 안 바뀌는지를 <b>움직이는 그림</b>으로 봐요.</p>
+  </div>
+
+  <a href="00-intro.html" style="display:block;text-decoration:none;margin:8px 0 4px;padding:18px 22px;border-radius:16px;background:linear-gradient(100deg,rgba(251,191,36,.12),rgba(55,189,248,.08));border:1px solid var(--hot);transition:.2s">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--hot);font-weight:700">👋 처음이세요?</div>
+    <div style="font-size:18px;font-weight:800;color:var(--ink);margin:6px 0 4px">0번 — 변수는 상자가 아니다 (이름표와 객체)</div>
+    <div style="font-size:13.5px;color:var(--muted)">대부분의 입문서가 가르치는 "값을 담는 상자" 모델을 깨고, 파이썬의 진짜 모델 — 객체에 이름표 붙이기 — 을 한눈에. 핵심 용어와 코스맵까지. →</div>
+  </a>
+  <p class="note" style="margin:6px 2px 0;color:var(--faint);font-size:13px">📚 처음이라면 <b>0번부터 순서대로</b>. <b>문법 강좌가 아니라 멘탈 모델</b>이에요 — 이름표↔객체 그림으로 "왜 이렇게 동작하지?"를 풀어요. 척추는 <b>이름과 객체(A) → 별칭과 복사(B) → 스코프(C) → 게으른 흐름(D) → 모든 게 객체(E)</b>. <b style="color:var(--hot)">별칭과 복사(B)</b>와 <b style="color:var(--hot)">스코프(C)</b>가 함정이 가장 많이 나오는 두 기둥이에요.</p>
+
+  <div class="seclabel">PART A · 이름과 객체</div>
+  <div class="cards">
+    <a class="ccard" href="01-name-tag.html"><div class="num">01</div><h3>이름표 붙이기</h3><p>대입은 "상자에 담기"가 아니라 "객체에 이름표 붙이기". 같은 객체에 이름표 여럿도 가능. del은 이름표 떼기.</p><div class="chips"><span class="chip">binding</span></div></a>
+    <a class="ccard" href="02-is-vs-eq.html"><div class="num">02</div><h3>같은 객체? 닮은 객체?</h3><p>== 는 내용이 같나(동등성), is 는 같은 객체인가(동일성). None은 단 하나뿐. ==의 행동은 객체가 정해요.</p><div class="chips"><span class="chip">is / ==</span><span class="chip">None</span></div></a>
+    <a class="ccard" href="03-mutable.html"><div class="num">03</div><h3>가변 vs 불변</h3><p>리스트·딕트는 내용이 바뀌고, 숫자·문자열·튜플은 안 바뀌어요. += 가 왜 두 얼굴인지도 여기서.</p><div class="chips"><span class="chip">mutable</span></div></a>
+  </div>
+
+  <div class="seclabel">PART B · <b>별칭과 복사</b> — 함정의 진원지</div>
+  <div class="cards">
+    <a class="ccard" href="04-rebind-mutate.html"><div class="num">04</div><h3>재바인딩 vs 제자리 변경</h3><p>이름표를 옮기는 것과 객체 내용을 바꾸는 것은 완전히 다른 일. 한 글자 차이가 다른 결과.</p><div class="chips"><span class="chip">rebind</span><span class="chip">mutate</span></div></a>
+    <a class="ccard" href="05-aliasing.html"><div class="num">05</div><h3>별칭 — 한 객체, 여러 이름</h3><p>y = x 하면 둘이 같은 객체. 한쪽으로 바꾸면 다른 쪽도 변해요. 함수 인자도 똑같은 이름표 붙이기.</p><div class="chips"><span class="chip">aliasing</span></div></a>
+    <a class="ccard" href="06-copy.html"><div class="num">06</div><h3>얕은 복사 vs 깊은 복사</h3><p>복사했는데 왜 같이 바뀌지? 겉만 복사하면 속은 공유돼요. 끝까지 복사하려면 깊은 복사.</p><div class="chips"><span class="chip">shallow/deep</span></div></a>
+    <a class="ccard" href="07-default-arg.html"><div class="num">07</div><h3>가변 기본 인자 함정</h3><p>def f(x=[]) — 그 빈 리스트는 함수가 정의될 때 딱 한 번 만들어져 모든 호출이 공유해요. 파이썬 최고의 함정.</p><div class="chips"><span class="chip">gotcha</span></div></a>
+  </div>
+
+  <div class="seclabel">PART C · <b>이름이 사는 곳 — 스코프</b></div>
+  <div class="cards">
+    <a class="ccard" href="08-namespace.html"><div class="num">08</div><h3>네임스페이스</h3><p>이름표는 허공이 아니라 "방"에 붙어요. 각 방은 이름→객체 매핑. 모듈·함수마다 자기 방.</p><div class="chips"><span class="chip">namespace</span></div></a>
+    <a class="ccard" href="09-legb.html"><div class="num">09</div><h3>LEGB — 이름 찾는 순서</h3><p>이름을 쓰면 파이썬은 지역→감싼함수→전역→내장 순으로 찾아요. 첫 번째로 찾은 방이 임자.</p><div class="chips"><span class="chip">LEGB</span></div></a>
+    <a class="ccard" href="10-local-assign.html"><div class="num">10</div><h3>대입이 만드는 지역변수</h3><p>함수 안 어디서든 이름에 대입하면, 그 이름은 함수 전체에서 지역이 돼요 — 그래서 생기는 그 에러.</p><div class="chips"><span class="chip">UnboundLocal</span></div></a>
+    <a class="ccard" href="11-closure.html"><div class="num">11</div><h3>클로저</h3><p>함수가 자기가 태어난 곳의 이름을 기억해요. 단, 값이 아니라 이름을 — 그래서 루프 클로저 함정.</p><div class="chips"><span class="chip">closure</span></div></a>
+  </div>
+
+  <div class="seclabel">PART D · 게으른 흐름</div>
+  <div class="cards">
+    <a class="ccard" href="12-iterator.html"><div class="num">12</div><h3>이터러블 ≠ 이터레이터</h3><p>리스트는 여러 번 도는 이터러블, 이터레이터는 한 번 흐르면 끝(소진). 둘은 다른 것.</p><div class="chips"><span class="chip">iterator</span></div></a>
+    <a class="ccard" href="13-generator.html"><div class="num">13</div><h3>제너레이터</h3><p>필요할 때 하나씩 만들어 내보내요(yield에서 멈췄다 재개). 무한 수열도 메모리 걱정 없이.</p><div class="chips"><span class="chip">generator</span><span class="chip">lazy</span></div></a>
+  </div>
+
+  <div class="seclabel">PART E · 모든 게 객체</div>
+  <div class="cards">
+    <a class="ccard" href="14-first-class.html"><div class="num">14</div><h3>함수도 값이다</h3><p>파이썬에선 함수도 객체 — 변수에 담고, 인자로 넘기고, 돌려받을 수 있어요. 이름표가 함수를 가리키죠.</p><div class="chips"><span class="chip">first-class</span></div></a>
+    <a class="ccard" href="15-decorator.html"><div class="num">15</div><h3>데코레이터</h3><p>클로저 + 일급 함수의 합작 — 원래 함수를 감싸 "앞뒤에 무언가"를 더한 새 함수를 돌려줘요.</p><div class="chips"><span class="chip">decorator</span></div></a>
+    <a class="ccard" href="16-duck-typing.html"><div class="num">16</div><h3>덕타이핑 + 회고</h3><p>"오리처럼 울면 오리" — 타입이 아니라 할 수 있는 일로 판단해요. 그리고 전체 멘탈 모델 한 장 정리.</p><div class="chips"><span class="chip">duck typing</span><span class="chip">recap</span></div></a>
+  </div>
+
+  <p class="foot" style="color:var(--faint);font-size:13px;text-align:center;border-top:1px solid var(--line);padding-top:22px;">// 코드 없는 직관 입문 · 모든 그림은 브라우저에서 실시간 계산</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 · 이터러블 ≠ 이터레이터 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--v)">PART D · 게으른 흐름 — CH 12</div>
+    <h1>이터러블 ≠ 이터레이터</h1>
+    <p class="intro">비슷해 보이지만 다른 두 가지예요. <b>이터러블</b>(iterable)은 "<code>for</code> 로 돌 수 있는 것" — 리스트·문자열·딕트. 몇 번이든 다시 돌 수 있죠. <b>이터레이터</b>(iterator)는 그 위를 훑는 <b>커서</b>예요 — <code>iter()</code> 로 얻고, 한 칸씩 나아가다 끝에 닿으면 <b>소진</b>돼 다시 못 써요. 흔한 오해: "리스트는 이터레이터다" — 아니에요. 리스트는 이터러블이고, <code>iter(리스트)</code> 가 그때그때 <b>새 커서</b>를 줘요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 도는 것</button>
+    <button data-s="1">01 · 훑는 커서</button>
+    <button data-s="2">02 · 한 번 쓰면 끝</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Iterable: Can Be Looped</span>
+    <h2>이터러블 — for로 돌 수 있는 것</h2>
+    <p class="lead">리스트 <code>[10, 20, 30]</code> 은 <b>이터러블</b>이에요 — <code>for x in 리스트</code> 로 돌 수 있죠. 그리고 <b>몇 번이든</b> 다시 돌 수 있어요. <code>for</code> 를 두 번 쓰면 두 번 다 처음부터 끝까지 나와요. 리스트 자체는 데이터를 들고 있는 컨테이너고, 도는 행위는 매번 새로 시작할 수 있어요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 이터러블(list·str·dict)은 여러 번 돌 수 있어요. 데이터를 들고 있는 그릇.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Iterator: a Cursor</span>
+    <h2>이터레이터 — 한 칸씩 나아가는 커서</h2>
+    <p class="lead"><code>it = iter(리스트)</code> 로 <b>이터레이터</b>(커서)를 얻어요. <code>next(it)</code> 를 부를 때마다 다음 값을 하나 내주고 커서가 한 칸 전진하죠. 사실 <code>for</code> 루프가 속으로 하는 일이 이거예요 — <code>iter()</code> 로 커서를 만들고 <code>next()</code> 를 반복. 버튼으로 커서를 한 칸씩 움직여 보세요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ iter()로 커서 생성, next()로 한 칸씩. for가 속으로 하는 일이 이것.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — One-Shot</span>
+    <h2>이터레이터는 한 번 흐르면 끝</h2>
+    <p class="lead">결정적 차이 — 이터레이터는 끝까지 가면 <b>소진</b>돼요. 다시 <code>next()</code> 하면 <code>StopIteration</code>(더 없음). 같은 커서로 또 돌 수 없어요. 반면 <b>이터러블</b>(리스트)은 <code>iter()</code> 를 부를 때마다 <b>새 커서</b>를 줘서 몇 번이든 새로 돌 수 있죠. 토글로 비교하세요 — 리스트는 두 번째 for도 멀쩡, 소진된 커서는 빈 손.</p>
+    <div class="toggles" id="oneTog">
+      <button data-v="iterable" class="on">이터러블 (재사용 가능)</button>
+      <button data-v="iterator">이터레이터 (소진)</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 이터러블=여러 번(매번 새 커서) / 이터레이터=한 번 쓰면 소진. 이게 핵심 구분.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>이터러블</b>은 도는 대상(여러 번 가능), <b>이터레이터</b>는 그 위를 한 번 훑는 커서(소진됨). 리스트는 이터러블이지 이터레이터가 아니에요 — <code>iter()</code> 가 새 커서를 주죠. 그런데 이터레이터의 진짜 매력은 따로 있어요 — 값을 미리 다 만들어 두지 않고 <b>필요할 때 하나씩</b> 만들어 낼 수 있다는 것. 그걸 가장 쉽게 만드는 도구가 <b>제너레이터</b>예요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="13-generator.html" style="color:var(--q);font-weight:700">CH 13 · 제너레이터</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '12 · 이터러블 ≠ 이터레이터');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=180; let s='';
+  s+=PY.codeLine(20,14,'nums = [10, 20, 30]',{w:200,fs:11});
+  s+=PY.seq(60,70,[10,20,30],{title:'리스트 (이터러블) — 데이터 그릇'});
+  s+=`<text x="${W/2}" y="140" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">for x in nums: ... 를 몇 번이든 다시 돌 수 있어요</text>`;
+  document.getElementById('s0').innerHTML=PY.svg(W,H,s,'이터러블');
+  document.getElementById('lab0').innerHTML='리스트는 <b style="color:var(--q)">이터러블</b> — 데이터를 들고 있는 그릇. for로 몇 번이든 처음부터 돌 수 있어요.';
+})();
+
+// ===== STEP 1 =====
+(function(){ const arr=[10,20,30]; let cur=-1;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="next1">next(it) ▶</button><button class="btn" id="reset1">iter() 새로</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=170; let s='';
+    s+=PY.codeLine(20,14,'it = iter(nums)',{w:170,fs:11});
+    s+=PY.seq(60,80,arr,{cursor:cur,title:'커서(이터레이터)'});
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'커서');
+    const done = cur>=arr.length;
+    document.getElementById('cnt1').textContent = cur<0?'커서 시작 전':done?'소진됨':`next() → ${arr[cur]}`;
+    document.getElementById('lab1').innerHTML = cur<0
+      ? 'iter()로 커서를 만들었어요. next(it)를 눌러 한 칸씩 나아가 보세요.'
+      : done ? '<b style="color:var(--dead)">소진</b> — 더 next()하면 StopIteration(끝).'
+      : `<b style="color:var(--hot)">next(it) → ${arr[cur]}</b>. 커서가 한 칸 전진했어요.`;
+  }
+  document.getElementById('next1').onclick=()=>{ if(cur<arr.length) cur++; render(); };
+  document.getElementById('reset1').onclick=()=>{ cur=-1; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='iterable';
+  const tog=document.getElementById('oneTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=200; const arr=[10,20,30]; let s='';
+    if(view==='iterable'){
+      s+=PY.codeLine(20,12,'for x in nums: ...  (두 번)',{w:260,fs:11,color:'var(--good)'});
+      s+=PY.seq(60,60,arr,{title:'첫 번째 for — 새 커서'});
+      s+=PY.seq(60,130,arr,{title:'두 번째 for — 또 새 커서'});
+      s+=`<text x="380" y="84" font-size="10" font-family="monospace" fill="var(--good)">10·20·30</text>`;
+      s+=`<text x="380" y="154" font-size="10" font-family="monospace" fill="var(--good)">10·20·30</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--good)">이터러블</b>: for를 돌 때마다 iter()가 <b>새 커서</b>를 줘 매번 처음부터. 몇 번이든 OK.';
+    } else {
+      s+=PY.codeLine(20,12,'it = iter(nums);  두 번 소비',{w:260,fs:11,color:'var(--hot)'});
+      s+=PY.seq(60,60,arr,{consumedTo:2,title:'첫 소비 — 다 써버림'});
+      s+=`<text x="60" y="150" font-size="11" font-family="monospace" fill="var(--dead)">두 번째 시도 → 빈 손 (StopIteration)</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">이터레이터</b>: 한 커서를 다 쓰면 소진. 같은 it로 또 돌면 아무것도 안 나와요(이미 끝).';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'소진');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">도는 대상 vs 훑는 커서</text>`;
+  const rows=[['이터러블','for로 돎·여러 번 가능·iter()가 새 커서','var(--q)'],['이터레이터','한 칸씩 next()·끝나면 소진(1회용)','var(--v)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='필요할 때 하나씩 만들어내기 — 다음, 제너레이터.';
+})();
+</script>
+</body>
+</html>

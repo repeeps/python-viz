@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 · 얕은 복사 vs 깊은 복사 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--hot)">PART B · 별칭과 복사 — CH 06</div>
+    <h1>얕은 복사 vs 깊은 복사</h1>
+    <p class="intro">별칭이 싫으면 <b>복사</b>하면 되죠. <code>y = x.copy()</code> 는 진짜 새 객체를 만들어 별칭을 끊어요. 하지만 함정이 있어요 — 이건 <b>얕은 복사</b>라서 <b>겉(최상위)만</b> 새로 만들고, <b>안에 든 객체는 원본과 공유</b>해요. 그래서 중첩 리스트라면 안쪽을 바꿨을 때 여전히 같이 변하죠. 끝까지 독립시키려면 <b>깊은 복사</b>가 필요해요. "복사했는데 왜 같이 바뀌지?"의 답이 여기 있어요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 복사로 별칭 끊기</button>
+    <button data-s="1">01 · 얕은 복사의 함정</button>
+    <button data-s="2">02 · 깊은 복사</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Copy Breaks the Alias</span>
+    <h2>복사는 진짜 새 객체를 만든다</h2>
+    <p class="lead"><code>y = x</code> 는 별칭(같은 객체)이었지만, <code>y = x.copy()</code> 는 <b>새 리스트 객체</b>를 만들어요(id가 다름). 이제 x와 y는 서로 다른 객체라, 평평한 리스트라면 한쪽을 바꿔도 다른 쪽은 그대로예요. 별칭이 끊긴 거죠. 토글로 별칭과 복사를 비교해 보세요 — 객체가 하나냐 둘이냐가 갈려요.</p>
+    <div class="toggles" id="copyTog">
+      <button data-v="alias" class="on">y = x (별칭)</button>
+      <button data-v="copy">y = x.copy() (복사)</button>
+    </div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ copy()는 새 객체(id 다름) → 별칭 끊김. 단, "겉"만 새로 만들어요(다음 단계).</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Shallow Copy Shares the Inside</span>
+    <h2>겉만 새 것, 속은 공유</h2>
+    <p class="lead">함정은 <b>중첩</b>(리스트 안의 리스트)에서 드러나요. <code>x = [[1, 2], 3]</code> 을 얕은 복사하면, 바깥 리스트는 새로 만들지만 <b>안쪽 리스트 <code>[1, 2]</code> 는 원본과 같은 객체를 가리켜요</b>(주소만 복사). 그래서 <code>y[0].append(9)</code> 로 안쪽을 바꾸면 — x의 안쪽도 같이 변해요! 겉은 독립인데 속은 여전히 별칭인 거죠.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 얕은 복사: 최상위만 새 객체, 안의 객체는 주소만 복사(공유). 중첩이면 여전히 위험.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--good)">Step 02 — Deep Copy Goes All the Way</span>
+    <h2>깊은 복사: 끝까지 새로 만든다</h2>
+    <p class="lead"><b>깊은 복사</b>(<code>copy.deepcopy(x)</code>)는 바깥부터 안쪽까지 <b>모든 객체를 재귀적으로</b> 새로 만들어요. 그래서 안쪽 리스트도 완전히 별개 — 어디를 바꿔도 원본은 전혀 안 변하죠. 완전한 독립 사본이에요. 토글로 얕은/깊은 복사에서 안쪽을 바꿨을 때 원본이 어떻게 다른지 비교하세요.</p>
+    <div class="toggles" id="deepTog">
+      <button data-v="shallow" class="on">얕은 복사</button>
+      <button data-v="deep">깊은 복사</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 깊은 복사 = 끝까지 재귀 복사 → 완전 독립. 얕은 복사는 한 겹만.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>얕은 복사</b>(<code>.copy()</code>)는 최상위만 새로 만들고 안의 객체는 공유 — 평평한 리스트엔 충분하지만 중첩이면 안쪽이 여전히 별칭이에요. <b>깊은 복사</b>(<code>deepcopy</code>)는 끝까지 복사해 완전 독립. "복사했는데 같이 바뀐다"면 십중팔구 중첩 + 얕은 복사예요. 여기까지가 별칭·복사 함정. 이제 또 다른 악명 높은 함정 — 함수의 <b>기본값</b>이 호출마다 새로 생기지 않는다는 사실로 가요.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="07-default-arg.html" style="color:var(--q);font-weight:700">CH 07 · 가변 기본 인자 함정</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '06 · 얕은/깊은 복사');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ let view='alias';
+  const tog=document.getElementById('copyTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=190; let s='';
+    if(view==='alias'){
+      s+=PY.codeLine(20,14,'y = x',{w:90,color:'var(--hot)'});
+      s+=PY.objBox(250,80,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:130,h:54});
+      s+=PY.nameLabel(70,62,'x',{}); s+=PY.ref(116,76,250,98,{});
+      s+=PY.nameLabel(70,118,'y',{}); s+=PY.ref(116,132,250,116,{});
+      s+=`<text x="${W/2}" y="178" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--hot)">객체 하나(id 4401) — 별칭</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--hot)">y = x</b>: 객체는 하나, 이름표 둘. 별칭이라 한쪽 제자리 변경이 둘 다 보여요.';
+    } else {
+      s+=PY.codeLine(20,14,'y = x.copy()',{w:140,color:'var(--good)'});
+      s+=PY.nameLabel(60,40,'x',{}); s+=PY.objBox(190,30,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:120,h:46}); s+=PY.ref(106,54,190,52,{});
+      s+=PY.nameLabel(60,128,'y',{}); s+=PY.objBox(190,118,{type:'list',value:'[1, 2]',id:'4495',mutable:true,w:120,h:46}); s+=PY.ref(106,142,190,140,{});
+      s+=`<text x="${W/2}" y="186" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">객체 둘(id 4401·4495) — 별칭 끊김</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--good)">y = x.copy()</b>: 새 객체(id 4495) 생성. 평평한 리스트라면 이제 서로 독립.';
+    }
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'복사 vs 별칭');
+  }
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'x = [[1, 2], 3];  y = x.copy()', inner:'[1, 2]', d:'바깥은 둘, 안쪽 리스트는 공유(같은 id)'},
+    {t:'y[0].append(9)', inner:'[1, 2, 9]', d:'안쪽을 바꾸니 x[0]도 [1,2,9]! 속은 별칭이었음', col:'var(--hot)'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=220; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,12,st.t,{w:300,color:'var(--hot)'});
+    // outer x and y (two separate outer boxes)
+    s+=PY.nameLabel(20,58,'x',{}); s+=PY.objBox(20,92,{type:'list',value:'[ ▢, 3]',id:'4401',mutable:true,w:120,h:48});
+    s+=PY.nameLabel(330,58,'y',{}); s+=PY.objBox(320,92,{type:'list',value:'[ ▢, 3]',id:'4495',mutable:true,w:120,h:48});
+    // shared inner object in the middle
+    s+=PY.objBox(170,150,{type:'list',value:st.inner,id:'7001',mutable:true,w:130,h:48,hl:i===1});
+    s+=PY.ref(80,140,200,150,{}); // x's slot → inner
+    s+=PY.ref(380,140,300,150,{}); // y's slot → inner
+    s+=`<text x="${W/2}" y="210" text-anchor="middle" font-size="10.5" font-family="monospace" fill="${st.col||'var(--muted)'}">안쪽 리스트(id 7001)는 x·y가 공유</text>`;
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'얕은 복사');
+    document.getElementById('cnt1').textContent=`${i+1} / 2`;
+    document.getElementById('lab1').innerHTML=`<b style="color:${st.col||'var(--hot)'}">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='shallow';
+  const tog=document.getElementById('deepTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=230; let s='';
+    s+=PY.codeLine(150,8,'y[0].append(9)',{w:150,fs:11,color:'var(--hot)'});
+    s+=PY.nameLabel(20,52,'x',{}); s+=PY.objBox(20,84,{type:'list',value:'[ ▢, 3]',id:'4401',mutable:true,w:120,h:46});
+    s+=PY.nameLabel(330,52,'y',{}); s+=PY.objBox(320,84,{type:'list',value:'[ ▢, 3]',id:'4495',mutable:true,w:120,h:46});
+    if(view==='shallow'){
+      s+=PY.objBox(170,160,{type:'list',value:'[1, 2, 9]',id:'7001',mutable:true,w:130,h:48,hl:true});
+      s+=PY.ref(78,130,200,160,{}); s+=PY.ref(382,130,300,160,{});
+      s+=`<text x="${W/2}" y="220" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--hot)">안쪽 공유 → y[0] 변경이 x[0]에도 (원본 오염)</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--hot)">얕은 복사</b>: 안쪽 리스트(id 7001) 하나를 공유 → y[0] 변경이 x[0]에도 보여요(원본 오염).';
+    } else {
+      s+=PY.objBox(20,160,{type:'list',value:'[1, 2]',id:'7001',mutable:true,w:120,h:46});
+      s+=PY.objBox(320,160,{type:'list',value:'[1, 2, 9]',id:'7050',mutable:true,w:120,h:46,hl:true});
+      s+=PY.ref(72,130,72,160,{}); s+=PY.ref(388,130,388,160,{});
+      s+=`<text x="${W/2}" y="220" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--good)">안쪽도 따로(7001·7050) → y만 [1,2,9], 원본 x는 [1,2]</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--good)">깊은 복사</b>: 안쪽까지 새 객체(7050) → 완전 독립. y를 바꿔도 x는 안 변해요.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'깊은 복사');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">한 겹만 vs 끝까지</text>`;
+  const rows=[['얕은 복사 .copy()','최상위만 새 객체·안은 공유','var(--hot)'],['깊은 복사 deepcopy','끝까지 재귀 복사·완전 독립','var(--good)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="10.5" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9.5" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='함수 기본값은 호출마다 새로 안 생긴다 — 다음, 그 악명의 함정.';
+})();
+</script>
+</body>
+</html>

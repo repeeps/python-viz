@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14 · 함수도 값이다 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--good)">PART E · 모든 게 객체 — CH 14</div>
+    <h1>함수도 값이다</h1>
+    <p class="intro">파이썬에선 <b>모든 게 객체</b>예요 — 숫자도, 리스트도, 그리고 <b>함수도</b>. 함수 이름은 그저 함수 객체에 붙은 <b>이름표</b>일 뿐이죠(CH01 그대로). 그래서 함수를 다른 변수에 담고(<code>say = greet</code>), 인자로 넘기고, 리스트에 넣고, 함수에서 돌려받을 수 있어요. 이걸 "함수가 <b>일급(first-class)</b>"이라고 해요. PART C에서 클로저로 함수를 돌려받았던 것도 다 이 덕분이었어요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 함수도 객체</button>
+    <button data-s="1">01 · 인자로 넘기기</button>
+    <button data-s="2">02 · 돌려받기</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Functions Are Objects</span>
+    <h2>함수 이름도 그냥 이름표</h2>
+    <p class="lead"><code>def greet(): ...</code> 를 정의하면, 함수 <b>객체</b>가 하나 만들어지고 이름표 <code>greet</code> 가 거기 붙어요 — 리스트나 숫자와 똑같아요. 그래서 <code>say = greet</code> 를 하면(괄호 없이!) 같은 함수 객체에 이름표 <code>say</code> 가 하나 더 붙죠. 이제 <code>say()</code> 도 <code>greet()</code> 와 똑같이 동작해요. 괄호 <code>()</code> 는 "호출", 괄호 없는 이름은 "함수 객체 자체"예요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 함수도 객체, 이름은 이름표. greet(괄호X)=객체 자체, greet()=호출.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Passing Functions Around</span>
+    <h2>함수를 인자로 넘긴다</h2>
+    <p class="lead">함수가 값이니, 다른 함수에 <b>인자로</b> 넘길 수 있어요. <code>apply_twice(f, x)</code> 는 받은 함수 <code>f</code> 를 <code>x</code> 에 두 번 적용하죠. <code>apply_twice(double, 3)</code> 이면 <code>double</code> 함수가 들어가 3→6→12. <code>sorted(…, key=함수)</code>·<code>map(함수, …)</code> 같은 게 다 이 원리예요 — "무엇을 할지"를 함수로 건네는 거죠. 버튼으로 함수가 인자로 들어가 실행되는 걸 보세요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 함수를 인자로 넘겨 "무엇을 할지"를 건넴(map·sorted key 등). 고차 함수.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Returning Functions</span>
+    <h2>함수를 돌려받는다</h2>
+    <p class="lead">함수는 다른 함수를 <b>만들어 돌려줄</b> 수도 있어요 — CH11 클로저에서 본 그대로죠. <code>make_multiplier(3)</code> 이 "3배 하는 함수"를 만들어 돌려주면, 받은 쪽은 그걸 변수에 담아 마음껏 호출해요. 함수가 값이라 가능한 일이에요. 이 "함수를 받아서 / 함수를 돌려주는" 조합이 — 다음 챕터 <b>데코레이터</b>의 정확한 재료예요.</p>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 함수가 함수를 돌려줌(클로저). 받기+돌려주기 = 데코레이터의 재료.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead">파이썬에서 <b>함수도 객체</b>라, 이름표로 가리키고 변수에 담고 인자로 넘기고 돌려받을 수 있어요(일급 함수). 이게 클로저·고차 함수를 가능케 했죠. 그리고 "함수를 <b>받아서</b> 살짝 바꾼 함수를 <b>돌려주는</b>" 패턴이 아주 유용해서, 파이썬은 그걸 위한 깔끔한 문법까지 줬어요 — <code>@</code>. 그게 <b>데코레이터</b>예요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="15-decorator.html" style="color:var(--q);font-weight:700">CH 15 · 데코레이터</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '14 · 함수도 값이다');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=180; let s='';
+  s+=PY.codeLine(20,14,'def greet(): ...   ;   say = greet',{w:320,fs:11});
+  s+=PY.objBox(250,76,{type:'function',value:'greet',id:'5500',mutable:false,w:150,h:56});
+  s+=PY.nameLabel(60,58,'greet',{}); s+=PY.ref(124,72,250,98,{});
+  s+=PY.nameLabel(60,118,'say',{}); s+=PY.ref(116,118,250,114,{});
+  s+=`<text x="325" y="166" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--good)">say() == greet() (같은 함수 객체)</text>`;
+  document.getElementById('s0').innerHTML=PY.svg(W,H,s,'함수 객체');
+  document.getElementById('lab0').innerHTML='함수도 객체(id 5500). <code>say = greet</code>(괄호 없이!)는 같은 함수에 이름표 추가 — 리스트 별칭과 똑같아요.';
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'apply_twice(double, 3)', stage:0, d:'함수 double을 인자 f로 넘김'},
+    {t:'f(3) → 6', stage:1, d:'받은 f(=double)를 3에 적용 → 6'},
+    {t:'f(6) → 12', stage:2, d:'한 번 더 → 12 (두 번 적용)'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=180; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,'apply_twice(double, 3)',{w:230,fs:11,color:'var(--hot)'});
+    s+=PY.objBox(40,70,{type:'function',value:'double',id:'5600',mutable:false,w:130,h:46});
+    s+=`<text x="105" y="130" text-anchor="middle" font-size="9.5" font-family="monospace" fill="var(--faint)">인자 f로 들어감</text>`;
+    s+=PY.arrow(170,92,250,92,{color:'var(--hot)',lw:1.6});
+    const vals=['3','6','12'];
+    s+=PY.chip(320,92,'값: '+vals[st.stage],{color:'var(--good)',minW:90,h:30});
+    if(st.stage>=1) s+=`<text x="${W/2}" y="160" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">3 → 6 ${st.stage>=2?'→ 12':''}</text>`;
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'인자로 넘기기');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=`<b style="color:var(--hot)">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ const W=460,H=180; let s='';
+  s+=PY.codeLine(20,14,'triple = make_multiplier(3)',{w:270,fs:11});
+  s+=`<rect x="30" y="58" width="150" height="56" rx="12" fill="var(--panel)" stroke="var(--v)" stroke-width="1.5"/>`;
+  s+=`<text x="44" y="80" font-size="10.5" font-family="monospace" font-weight="700" fill="var(--v)">make_multiplier(3)</text>`;
+  s+=`<text x="44" y="100" font-size="9" font-family="monospace" fill="var(--faint)">함수를 만들어 →</text>`;
+  s+=PY.objBox(270,58,{type:'function',value:'×3 함수',id:'5700',mutable:false,w:150,h:56});
+  s+=PY.nameLabel(280,128,'triple',{}); s+=PY.ref(300,128,310,114,{});
+  s+=PY.arrow(180,86,270,86,{color:'var(--good)',lw:1.6});
+  s+=`<text x="${W/2}" y="166" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">triple(10) → 30 (돌려받은 함수를 호출)</text>`;
+  document.getElementById('s2').innerHTML=PY.svg(W,H,s,'돌려받기');
+  document.getElementById('lab2').innerHTML='<code>make_multiplier(3)</code>이 "×3 함수"를 만들어 돌려주고, triple이 받아 가리켜요(클로저). 함수가 값이라 가능.';
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">함수 = 일급 객체</text>`;
+  const rows=[['함수도 객체','이름표로 가리킴·변수에 담음(say=greet)','var(--q)'],['넘기고 돌려받음','인자로 전달·결과로 반환 → 데코레이터 재료','var(--good)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="8.8" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='받아서 바꿔 돌려주는 패턴에 @ 문법을 — 다음, 데코레이터.';
+})();
+</script>
+</body>
+</html>

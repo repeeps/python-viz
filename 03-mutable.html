@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 · 가변 vs 불변 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--q)">PART A · 이름과 객체 — CH 03</div>
+    <h1>가변 vs 불변</h1>
+    <p class="intro">객체엔 두 종류가 있어요. <b>가변</b>(리스트·딕트·셋)은 만든 뒤에도 내용을 바꿀 수 있고, <b>불변</b>(숫자·문자열·튜플)은 한번 만들어지면 내용이 <b>절대 안 변해요</b>. 주의 — "불변"은 "그 <b>객체의 내용</b>이 안 변한다"는 뜻이지, "이름을 다른 객체로 못 옮긴다"가 아니에요(<code>x = 6</code>은 언제나 가능). 이 구분이 파이썬 함정의 절반을 설명해요. 그리고 <code>+=</code>가 왜 두 얼굴인지도 바로 여기서 나와요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 바뀌나 안 바뀌나</button>
+    <button data-s="1">01 · '불변'의 정확한 뜻</button>
+    <button data-s="2">02 · += 의 두 얼굴</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Can It Change?</span>
+    <h2>내용을 바꿀 수 있는 객체와 없는 객체</h2>
+    <p class="lead">같은 자리(같은 객체, 같은 id)에서 내용을 바꿔보려 해요. 토글로 비교하세요. <b>가변</b> 리스트는 <code>lst[0] = 9</code> 로 <b>제자리에서</b> 내용이 바뀌어요 — 객체는 그대로(id 동일), 안만 달라지죠. <b>불변</b> 문자열·튜플·숫자는 그런 자리 변경 자체가 <b>막혀</b> 있어요. 바꾸고 싶으면 새 객체를 만들 수밖에 없어요.</p>
+    <div class="toggles" id="mutTog">
+      <button data-v="mut" class="on">가변 (list)</button>
+      <button data-v="immut">불변 (문자열)</button>
+    </div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 가변=제자리 변경 가능(id 유지) / 불변=자리 변경 막힘(새 객체뿐).</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — What "Immutable" Really Means</span>
+    <h2>'불변'은 객체 얘기, 이름은 자유</h2>
+    <p class="lead">흔한 혼란 — "숫자가 불변이면 <code>x = 6</code> 도 안 되는 거 아냐?" 아니에요. <code>x = 5</code> 다음 <code>x = 6</code> 은 객체 5를 6으로 <b>바꾼 게 아니라</b>, 이름표 x를 <b>새 객체 6으로 옮긴 것</b>(재바인딩)이에요. 5라는 객체는 그대로 있고요(아무도 안 가리키면 청소). 즉 <b>불변 = 그 객체의 내용이 불변</b>일 뿐, 이름은 언제든 다른 객체로 옮길 수 있어요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ x = 6 은 "5를 바꿈"이 아니라 "x를 6에 재바인딩". 객체 불변 ≠ 이름 고정.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — The Two Faces of +=</span>
+    <h2>같은 += 인데 결과가 다르다</h2>
+    <p class="lead"><code>+=</code> 는 객체가 가변이냐에 따라 완전히 다르게 동작해요. <b>리스트</b> <code>a += [3]</code> 은 그 리스트를 <b>제자리에서</b> 늘려요(id 유지 — 별칭에 영향!). <b>숫자</b> <code>n += 1</code> 은 불변이라 제자리 변경이 안 되니 <b>새 객체</b>를 만들어 이름표를 옮겨요(id 변경). 같은 기호, 다른 일. 토글로 id 변화를 보세요.</p>
+    <div class="toggles" id="iaddTog">
+      <button data-v="list" class="on">list += (제자리)</button>
+      <button data-v="int">int += (새 객체)</button>
+      <button data-v="trap">함정: tuple 안 list</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 가변 += 는 제자리(id 유지)·불변 += 는 새 객체(id 변경). 같은 기호 다른 의미.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>가변</b>(리스트·딕트·셋)은 제자리 변경 가능(id 유지), <b>불변</b>(숫자·문자열·튜플)은 내용이 고정 — 바꾸려면 새 객체. "불변"은 객체 내용 얘기지 이름 고정이 아니에요(<code>x = 6</code>은 늘 OK). <code>+=</code>도 그래서 두 얼굴이죠. 이제 결정적 질문 — 이름표를 <b>옮기는 것</b>과 객체를 <b>제자리에서 바꾸는 것</b>은 보기엔 비슷해도 완전히 다른 일이에요. 그 차이가 다음 PART 함정들의 핵심이에요.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 PART B → <a href="04-rebind-mutate.html" style="color:var(--q);font-weight:700">CH 04 · 재바인딩 vs 제자리 변경</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '03 · 가변 vs 불변');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ let view='mut';
+  const tog=document.getElementById('mutTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=190; let s='';
+    if(view==='mut'){
+      s+=PY.codeLine(20,14,'lst[0] = 9',{w:130,color:'var(--good)'});
+      s+=PY.nameLabel(60,72,'lst',{}); s+=PY.objBox(200,64,{type:'list',value:'[9, 2]',id:'4401',mutable:true,w:140,h:58}); s+=PY.ref(116,86,200,92,{});
+      s+=`<text x="270" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">✓ 제자리 변경 — id 4401 그대로, 안만 9로</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--good)">가변</b>: 같은 객체(id 4401) 안에서 내용이 [1,2]→[9,2]로 바뀌어요. 새 객체 아님.';
+    } else {
+      s+=PY.codeLine(20,14,"s[0] = 'H'  ✕",{w:150,color:'var(--dead)'});
+      s+=PY.nameLabel(60,72,'s',{}); s+=PY.objBox(200,64,{type:'str',value:'"hi"',id:'7720',mutable:false,w:140,h:58}); s+=PY.ref(106,86,200,92,{});
+      s+=`<text x="270" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">✕ TypeError — 불변은 자리 변경 자체가 막힘</text>`;
+      document.getElementById('lab0').innerHTML='<b style="color:var(--v)">불변</b>: 문자열·튜플·숫자는 자리 변경이 막혀 있어요(<code>s[0]=...</code> → 에러). 바꾸려면 새 객체뿐.';
+    }
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'가변 vs 불변');
+  }
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'x = 5', cur:'5', curId:'1005', old:null},
+    {t:'x = 6', cur:'6', curId:'1006', old:{v:'5',id:'1005'}}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=190; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:90,color:'var(--hot)'});
+    s+=PY.nameLabel(60,90,'x',{});
+    s+=PY.objBox(250,72,{type:'int',value:st.cur,id:st.curId,mutable:false,w:100,h:52}); s+=PY.ref(106,104,250,98,{});
+    if(st.old){ s+=PY.objBox(250,140,{type:'int',value:st.old.v,id:st.old.id,mutable:false,w:100,h:40,dim:true}); s+=`<text x="370" y="164" font-size="9.5" font-family="monospace" fill="var(--faint)">5는 그대로(청소 대상)</text>`; }
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'재바인딩');
+    document.getElementById('cnt1').textContent=`${i+1} / 2`;
+    document.getElementById('lab1').innerHTML = i===0
+      ? '<b style="color:var(--hot)">x = 5</b> — 이름표 x가 객체 5(id 1005)를 가리켜요.'
+      : '<b style="color:var(--hot)">x = 6</b> — 5를 6으로 바꾼 게 아니라 x를 <b>새 객체 6</b>(id 1006)으로 옮긴 것. 5는 불변이라 그대로.';
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='list';
+  const tog=document.getElementById('iaddTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=200; let s='';
+    if(view==='list'){
+      s+=PY.codeLine(20,14,'a += [3]',{w:120,color:'var(--good)'});
+      s+=PY.nameLabel(60,80,'a',{}); s+=PY.objBox(220,64,{type:'list',value:'[1,2,3]',id:'4401',mutable:true,w:150,h:58}); s+=PY.ref(106,94,220,92,{});
+      s+=`<text x="270" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">제자리 확장 — id 4401 그대로</text>`;
+      s+=`<text x="270" y="170" text-anchor="middle" font-size="10" font-family="monospace" fill="var(--hot)">⚠ 같은 객체를 가리키는 다른 이름표에도 보임</text>`;
+      document.getElementById('lab2').innerHTML='리스트 <code>+=</code> 는 <b style="color:var(--good)">제자리 확장</b>(id 유지). 그래서 별칭(같은 객체의 다른 이름)에도 변화가 그대로 보여요.';
+    } else if(view==='int'){
+      s+=PY.codeLine(20,14,'n += 1',{w:110,color:'var(--hot)'});
+      s+=PY.nameLabel(60,86,'n',{});
+      s+=PY.objBox(240,64,{type:'int',value:'8',id:'1008',mutable:false,w:90,h:48}); s+=PY.ref(106,100,240,88,{});
+      s+=PY.objBox(240,134,{type:'int',value:'7',id:'1007',mutable:false,w:90,h:40,dim:true});
+      s+=`<text x="370" y="158" font-size="9.5" font-family="monospace" fill="var(--faint)">옛 7은 버려짐</text>`;
+      document.getElementById('lab2').innerHTML='숫자 <code>+=</code> 는 불변이라 <b style="color:var(--hot)">새 객체 8</b>을 만들어 n을 옮겨요(id 1007→1008). 옛 객체는 안 변함.';
+    } else {
+      s+=PY.codeLine(20,14,'t = ([1,2],);  t[0] += [3]',{w:280,color:'var(--dead)'});
+      s+=PY.objBox(210,70,{type:'tuple',value:'( [1,2,3], )',id:'고정',mutable:false,w:180,h:52});
+      s+=`<text x="300" y="118" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--good)">① 안 리스트는 제자리 확장됨 [1,2,3]</text>`;
+      s+=`<text x="300" y="138" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--dead)">② 그 결과를 튜플 칸에 재대입 시도 → TypeError</text>`;
+      s+=`<text x="${W/2}" y="178" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--hot)">에러가 났는데도 리스트는 이미 바뀌어 있다 (악명의 함정)</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">함정</b>: <code>t[0] += [3]</code>은 ①안쪽 리스트를 제자리 확장(성공)하고 ②튜플 칸에 재대입(실패→에러). <b>리스트는 바뀌었는데 에러도 난다.</b> 지금 이해 못 해도 괜찮아요 — 두 모델이 겹친 극단 사례.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'+= 두 얼굴');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=130;
+  let s=`<text x="${W/2}" y="22" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">가변=제자리 · 불변=새 객체</text>`;
+  const rows=[['가변','list·dict·set — 내용 제자리 변경(id 유지)','var(--good)'],['불변','int·str·tuple — 내용 고정(이름 재바인딩은 가능)','var(--v)'],['+=','가변은 제자리·불변은 새 객체','var(--hot)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='이름표 옮기기 vs 제자리 변경 — 보기엔 비슷해도 다른 일. 다음 PART에서.';
+})();
+</script>
+</body>
+</html>

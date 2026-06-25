@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>16 · 덕타이핑 + 회고 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--good)">PART E · 모든 게 객체 — CH 16</div>
+    <h1>덕타이핑 + 회고</h1>
+    <p class="intro">"오리처럼 걷고 오리처럼 운다면, 그건 오리다." 파이썬은 어떤 동작이 되는지를 <b>타입(클래스)</b>으로 따지지 않고, 그 객체가 <b>그 동작(메서드)을 가졌는가</b>로 판단해요 — 이게 <b>덕타이핑</b>이에요. <code>len(x)</code> 는 x가 <code>__len__</code> 을 가졌으면 되고, <code>for</code> 는 <code>__iter__</code> 가 있으면 되고, <code>==</code> 는 <code>__eq__</code> 가 정해요(CH02!). 그래서 파이썬은 "모든 게 객체 + 약속된 메서드"로 유연하게 굴러가요. 마지막으로 전체 그림을 한 장에 모아요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 오리처럼 울면</button>
+    <button data-s="1">01 · 곳곳이 덕타이핑</button>
+    <button data-s="2">02 · 전체 한 장</button>
+    <button data-s="3">03 · 마치며</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — If It Quacks</span>
+    <h2>타입이 아니라 할 수 있는 일</h2>
+    <p class="lead"><code>make_sound(x)</code> 가 <code>x.quack()</code> 을 부른다고 해요. 파이썬은 x가 "오리 클래스인가?"를 묻지 않아요 — 그냥 <code>quack()</code> <b>메서드가 있으면</b> 부르죠. 그래서 오리든, quack을 가진 사람이든 다 동작해요. quack이 없는 객체(돌멩이)만 그때 가서 에러나요. 토글로 여러 객체를 넣어 보세요 — 핏줄(타입)이 아니라 능력이 기준이에요.</p>
+    <div class="toggles" id="duckTog">
+      <button data-v="duck" class="on">오리</button>
+      <button data-v="person">사람(quack 가짐)</button>
+      <button data-v="rock">돌멩이(없음)</button>
+    </div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ "그 메서드 있어?"로 판단. 타입(클래스)이 아니라 능력이 기준 — 덕타이핑.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Duck Typing Everywhere</span>
+    <h2>==·len·for도 다 약속된 메서드</h2>
+    <p class="lead">파이썬의 핵심 문법들이 다 이 방식이에요. <code>len(x)</code> 는 x의 <code>__len__</code> 을 부르고, <code>for ... in x</code> 는 <code>__iter__</code> 를, <code>x == y</code> 는 <code>__eq__</code> 를 불러요(CH02에서 예고했죠). 즉 내 객체에 이 "약속된 메서드"(프로토콜)를 정의해 두면, 내 객체도 리스트·문자열처럼 <code>len()</code> 되고 <code>for</code> 로 돌고 <code>==</code> 로 비교돼요. 타입을 검사하는 게 아니라 약속을 지키면 끼워주는 거죠.</p>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ len→__len__, for→__iter__, ==→__eq__. 약속된 메서드만 있으면 내 객체도 동급.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — The Whole Picture</span>
+    <h2>전체 멘탈 모델 한 장</h2>
+    <p class="lead">우리가 걸어온 길을 한 장에. 전부 <b>0번의 "이름표와 객체"</b> 하나에서 자랐어요. 이름표·객체(A)에서 시작해, 가변성과 별칭(B)으로 함정을 풀고, 이름이 사는 방(C)을 알고, 게으른 흐름(D)과 모든 게 객체(E)까지. 각 PART의 핵심을 짚어 보세요.</p>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 모든 게 "이름표가 객체를 가리킨다" 하나에서 출발했어요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Wrapping Up</span>
+    <h2>마치며</h2>
+    <p class="lead">0번에서 우리는 "변수는 상자가 아니라 객체에 붙은 <b>이름표</b>"라는 한 장면을 바꿔 끼웠어요. 그 작은 차이 하나로 — 별칭 버그, 얕은 복사, 가변 기본 인자, 루프 클로저, UnboundLocalError까지 — 파이썬의 악명 높은 함정들이 전부 같은 그림으로 풀렸죠. 이제 코드를 볼 때 "이 이름표는 어떤 객체를 가리키고, 무엇이 바뀌고 안 바뀌나"를 떠올릴 수 있다면, 파이썬이 훨씬 덜 신비롭게 느껴질 거예요. 수고했어요 👏</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ <a href="index.html" style="color:var(--q);font-weight:700">목차로 돌아가기</a> · 다른 챕터 다시 보기</p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '16 · 덕타이핑 + 회고');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ let view='duck';
+  const tog=document.getElementById('duckTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=180; let s='';
+    const meta={ duck:{t:'오리',has:true}, person:{t:'사람',has:true}, rock:{t:'돌멩이',has:false} };
+    const m=meta[view];
+    s+=PY.codeLine(20,14,'make_sound(x):  x.quack()',{w:250,fs:11});
+    s+=PY.objBox(40,70,{type:m.t,value: m.has?'quack() 있음':'quack() 없음',mutable:false,w:150,h:56,color:m.has?'var(--good)':'var(--dead)'});
+    s+=PY.arrow(190,98,270,98,{color:m.has?'var(--good)':'var(--dead)',lw:1.6});
+    if(m.has){ s+=PY.chip(360,98,'꽥! ✓',{color:'var(--good)',minW:80,h:30}); s+=`<text x="${W/2}" y="160" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">quack 메서드가 있으니 동작 — 타입 안 따짐</text>`; }
+    else { s+=PY.chip(360,98,'에러',{color:'var(--dead)',minW:80,h:30}); s+=`<text x="${W/2}" y="160" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">quack이 없어서 그제서야 AttributeError</text>`; }
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'덕타이핑');
+    document.getElementById('lab0').innerHTML = m.has
+      ? `<b style="color:var(--good)">${m.t}</b>: quack()만 있으면 동작해요. 오리 클래스인지 안 따져요.`
+      : `<b style="color:var(--dead)">${m.t}</b>: quack()이 없어 호출 시점에 에러. "타입이 틀려서"가 아니라 "그 능력이 없어서".`;
+  }
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const W=460,H=180; let s='';
+  const rows=[['len(x)','x.__len__()','var(--q)'],['for ... in x','__iter__ + __next__ (CH12)','var(--hot)'],['x == y','x.__eq__(y)  ← CH02','var(--v)'],['print(x)','x.__str__()','var(--good)']];
+  s+=`<text x="${W/2}" y="24" text-anchor="middle" font-size="11.5" font-family="monospace" fill="var(--muted)">문법 → 부르는 약속된 메서드</text>`;
+  rows.forEach((r,i)=>{ const y=40+i*32; s+=`<rect x="40" y="${y}" width="${W-80}" height="26" rx="7" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.2"/>`;
+    s+=`<text x="58" y="${y+17}" font-size="12" font-family="monospace" font-weight="700" fill="${r[2]}">${r[0]}</text>`;
+    s+=`<text x="${W-58}" y="${y+17}" text-anchor="end" font-size="11" font-family="monospace" fill="var(--ink)">${r[1]}</text>`; });
+  document.getElementById('s1').innerHTML=PY.svg(W,H,s,'프로토콜');
+  document.getElementById('lab1').innerHTML='파이썬 문법은 약속된 <b>이중밑줄 메서드</b>를 불러요. 내 객체에 <code>__len__</code>·<code>__iter__</code>·<code>__eq__</code>를 정의하면 리스트처럼 동작해요.';
+})();
+
+// ===== STEP 2 =====
+(function(){ const W=460,H=210;
+  const parts=[['A 이름과 객체','대입=이름표·is/==·가변/불변','var(--q)'],['B 별칭과 복사','별칭·복사·+= ·가변 기본인자','var(--hot)'],['C 스코프','네임스페이스·LEGB·클로저','var(--hot)'],['D 게으른 흐름','이터레이터·제너레이터','var(--v)'],['E 모든 게 객체','일급 함수·데코레이터·덕타이핑','var(--good)']];
+  let s='';
+  parts.forEach((p,i)=>{ const y=12+i*38; s+=`<rect x="20" y="${y}" width="${W-40}" height="32" rx="8" fill="var(--panel)" stroke="${p[2]}" stroke-width="1.2"/>`;
+    s+=`<text x="34" y="${y+21}" font-size="11.5" font-family="monospace" font-weight="700" fill="${p[2]}">${p[0]}</text>`;
+    s+=`<text x="${W-32}" y="${y+21}" text-anchor="end" font-size="9.5" font-family="monospace" fill="var(--ink)">${p[1]}</text>`;
+  });
+  document.getElementById('s2').innerHTML=PY.svg(W,H,s,'전체 한 장');
+  document.getElementById('lab2').innerHTML='다섯 PART 전부가 <b>"이름표가 객체를 가리킨다"</b> 하나에서 자란 가지예요.';
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=130; let s='';
+  s+=PY.nameLabel(60,50,'당신',{color:'var(--good)'}); s+=PY.ref(120,64,210,64,{color:'var(--hot)'});
+  s+=PY.objBox(210,34,{type:'mental model',value:'이름표 ↔ 객체',mutable:true,w:200,h:56});
+  s+=`<text x="${W/2}" y="118" text-anchor="middle" font-size="11.5" font-family="monospace" font-weight="700" fill="var(--good)">이제 이 그림 하나로 함정이 풀려요</text>`;
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'마치며');
+  document.getElementById('lab3').innerHTML='상자가 아니라 이름표 — 그 한 장면이 파이썬 전체를 다르게 보이게 해요. 수고했어요 👏';
+})();
+</script>
+</body>
+</html>

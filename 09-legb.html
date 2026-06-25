@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 · LEGB — 이름 찾는 순서 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--q)">PART C · 이름이 사는 곳 — CH 09</div>
+    <h1>LEGB — 이름 찾는 순서</h1>
+    <p class="intro">코드에서 이름 <code>x</code> 를 쓰면, 파이썬은 여러 방(네임스페이스) 중 어디서 찾을까요? 정해진 순서가 있어요 — <b>L</b>ocal(지금 함수) → <b>E</b>nclosing(나를 감싼 바깥 함수) → <b>G</b>lobal(모듈 전역) → <b>B</b>uiltin(파이썬 기본 제공: <code>len</code>·<code>print</code> 등). 안쪽부터 바깥으로 차례로 뒤져, <b>처음 찾은 방의 이름표</b>를 써요. 그래서 안쪽에 같은 이름이 있으면 바깥 것을 <b>가려요</b>(shadowing).</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 네 개의 방</button>
+    <button data-s="1">01 · 안에서 밖으로</button>
+    <button data-s="2">02 · 가림(shadowing)</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Four Rooms</span>
+    <h2>이름을 담는 네 겹의 방</h2>
+    <p class="lead">이름을 찾을 후보는 네 겹이에요. <b>L</b>ocal — 지금 실행 중인 함수의 방. <b>E</b>nclosing — 나를 감싸고 있는 바깥 함수의 방(함수 안 함수일 때). <b>G</b>lobal — 모듈(파일) 전역 방. <b>B</b>uiltin — 파이썬이 늘 제공하는 기본 이름들(<code>len</code>, <code>print</code>, <code>range</code>…). 안쪽(L)이 가장 가깝고 바깥(B)이 가장 멀어요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ L(지역)·E(감싼함수)·G(전역)·B(내장). 안쪽이 가깝고 바깥이 멀어요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Inner to Outer</span>
+    <h2>처음 찾은 방이 임자</h2>
+    <p class="lead">이름 <code>n</code> 을 쓰면 파이썬은 <b>L → E → G → B</b> 순으로 뒤져요. 어느 방에서든 <b>처음 찾으면 거기서 멈추고</b> 그 이름표를 써요. 버튼으로 찾기 과정을 따라가 보세요 — 지역에 없으면 감싼 함수로, 거기도 없으면 전역으로… 처음 발견한 방에서 끝나요. (여기선 <b>함수 안 함수</b>라 E 방도 있다고 가정 — E는 중첩일 때만 생겨요. 네 방 다 없으면 <code>NameError</code>.)</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 안쪽부터 차례로, 처음 찾은 방에서 멈춤. 끝까지 없으면 NameError.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Shadowing</span>
+    <h2>안쪽이 바깥을 가린다</h2>
+    <p class="lead">안쪽 방에 같은 이름이 있으면, 바깥 것을 <b>가려요</b>(shadowing). 토글로 보세요 — 지역에 <code>n</code> 이 있으면 전역 <code>n</code> 은 안 보이죠(L에서 멈추니까). 흔한 사고: 변수 이름을 <code>list</code>·<code>len</code> 같은 <b>내장 이름</b>으로 쓰면, 그 함수가 가려져서 못 쓰게 돼요. 가림은 버그가 아니라 규칙이지만, 내장 이름을 덮어쓰는 건 조심해야 해요.</p>
+    <div class="toggles" id="shadowTog">
+      <button data-v="local" class="on">지역에 n 있음</button>
+      <button data-v="noLocal">지역에 n 없음</button>
+      <button data-v="builtin">내장 가림 사고</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 안쪽 이름이 바깥을 가림. 내장(len·list)을 변수명으로 덮으면 그 기능을 잃어요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead">이름을 <b>읽을 때</b>, 파이썬은 <b>L→E→G→B</b> 순으로 찾아 처음 발견한 방의 이름표를 써요. 안쪽이 바깥을 가리죠(shadowing). 그런데 — 지금까진 "이름을 <b>읽는</b>" 얘기였어요. 함수 안에서 이름에 <b>대입</b>하면 얘기가 달라져요. 대입은 그 이름을 <b>지역</b>으로 만들어 버리는데, 그게 초보자를 당황시키는 그 에러를 낳아요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="10-local-assign.html" style="color:var(--q);font-weight:700">CH 10 · 대입이 만드는 지역변수</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '09 · LEGB');
+VZ.setupStepper();
+const PY=VZ.PY;
+const LABELS=[
+  {label:'L · Local (지금 함수)', names:'함수 안 지역 이름'},
+  {label:'E · Enclosing (감싼 함수)', names:'바깥 함수의 이름'},
+  {label:'G · Global (모듈 전역)', names:'파일 전역 이름'},
+  {label:'B · Builtin (기본 제공)', names:'len · print · range …'}
+];
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=210;
+  const layers=LABELS.map(l=>({label:l.label,names:l.names}));
+  document.getElementById('s0').innerHTML=PY.svg(W,H,PY.scopes(110,8,{layers,w:240,lh:42}),'네 개의 방');
+  document.getElementById('lab0').innerHTML='위에서 아래로 <b>L → E → G → B</b>. 위(안쪽)가 가장 가깝고, 아래(내장)가 가장 멀어요.';
+})();
+
+// ===== STEP 1 =====
+(function(){ // n is found at Global (index 2)
+  const foundAt=2;
+  let i=0; // how many layers checked (1..4)
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="step1b">다음 방 확인 ▶</button><button class="btn" id="reset1">처음</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=210;
+    const layers=LABELS.map((l,k)=>{ const o={label:l.label,names:l.names};
+      if(k<i){ if(k===foundAt) o.found=true; else o.hl=true; }
+      else if(k===i && i<=foundAt) {} // not yet
+      return o;
+    });
+    document.getElementById('s1').innerHTML=PY.svg(W,H,PY.scopes(110,8,{layers,w:240,lh:42}),'찾기');
+    const checked=Math.min(i,foundAt+1);
+    document.getElementById('cnt1').textContent = i===0?'n 을 찾기 시작':(i>foundAt?'G에서 찾음 → 멈춤':`${checked}개 방 확인`);
+    if(i===0) document.getElementById('lab1').innerHTML='이름 <code>n</code>을 읽으려 해요. "다음 방 확인"을 눌러 L부터 차례로 찾아보세요.';
+    else if(i<=foundAt) document.getElementById('lab1').innerHTML=`${LABELS[i-1].label.split(' ')[0]} 방엔 n이 ${i-1<foundAt?'<b style="color:var(--hot)">없음 → 다음 방</b>':''}`;
+    else document.getElementById('lab1').innerHTML='<b style="color:var(--good)">G(전역)에서 n을 찾았어요!</b> 여기서 멈추고 이 이름표를 써요. 더 바깥(B)은 안 봐요.';
+  }
+  document.getElementById('step1b').onclick=()=>{ if(i<=foundAt) i++; render(); };
+  document.getElementById('reset1').onclick=()=>{ i=0; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='local';
+  const tog=document.getElementById('shadowTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=210; let layers;
+    if(view==='local'){
+      layers=[{label:'L · 지역',names:'n = 99',found:true},{label:'G · 전역',names:'n = 1 (가려짐)'},{label:'B · 내장',names:'len, print …'}];
+      document.getElementById('lab2').innerHTML='지역에 <code>n=99</code> 가 있으니 L에서 멈춰 <b style="color:var(--good)">99</b>를 써요. 전역 n=1은 <b>가려져</b> 안 보임.';
+    } else if(view==='noLocal'){
+      layers=[{label:'L · 지역',names:'(n 없음)',hl:true},{label:'G · 전역',names:'n = 1',found:true},{label:'B · 내장',names:'len, print …'}];
+      document.getElementById('lab2').innerHTML='지역에 n이 없으면 통과 → G에서 <b style="color:var(--good)">전역 n=1</b>을 찾아 써요.';
+    } else {
+      layers=[{label:'L · 지역',names:'len = 5  ← 내장을 덮음!',found:true},{label:'G · 전역',names:''},{label:'B · 내장',names:'len(...) (가려짐·못 씀)'}];
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">사고</b>: 변수명을 <code>len</code>으로 쓰면 내장 <code>len()</code>이 가려져요 → <code>len(x)</code> 호출 시 "int는 호출 불가" 에러. 내장 이름은 변수명으로 피하세요.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,PY.scopes(110,18,{layers,w:240,lh:46}),'가림');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">읽기: L → E → G → B</text>`;
+  const rows=[['찾기 순서','안쪽(지역)부터 바깥(내장)까지·처음 찾으면 멈춤','var(--q)'],['가림','안쪽 이름이 같은 바깥 이름을 가림','var(--v)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="8.8" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='읽기는 LEGB. 그런데 "대입"은 규칙이 다르다 — 다음 챕터.';
+})();
+</script>
+</body>
+</html>

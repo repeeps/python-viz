@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 · 대입이 만드는 지역변수 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--q)">PART C · 이름이 사는 곳 — CH 10</div>
+    <h1>대입이 만드는 지역변수</h1>
+    <p class="intro">읽기는 LEGB로 바깥 방까지 찾았죠. 하지만 <b>대입</b>은 규칙이 달라요 — 함수 안 <b>어디서든</b> 이름에 대입하면, 파이썬은 그 이름을 <b>함수 전체에서 지역</b>으로 못박아요(코드를 읽기도 전에, 컴파일 시점에). 그래서 대입이 코드상 <b>뒤</b>에 있어도, 그 <b>앞에서 그 이름을 읽으면</b> "아직 값이 없는 지역 변수"라며 에러가 나요. 초보자를 가장 당황시키는 그 <code>UnboundLocalError</code>의 정체예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 읽기만 하면</button>
+    <button data-s="1">01 · 대입하면 지역</button>
+    <button data-s="2">02 · global / nonlocal</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Reading Sees the Global</span>
+    <h2>읽기만 하면 전역이 보인다</h2>
+    <p class="lead">함수 안에서 이름을 <b>읽기만</b> 하고 대입하지 않으면, 그 이름은 지역에 없으니 LEGB로 바깥을 찾아 <b>전역</b>을 봐요. <code>x = 1</code> (전역) 이 있고 함수가 <code>print(x)</code> 만 하면, 전역 x인 1이 잘 출력되죠. 여기까진 평범해요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 대입 없이 읽기만 = LEGB로 전역까지 찾아 봄. 문제 없음.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Assigning Makes It Local</span>
+    <h2>대입 한 번이 이름을 지역으로 못박는다</h2>
+    <p class="lead">그런데 함수 안 <b>어딘가</b>에 <code>x = 2</code> 가 있으면? 파이썬은 함수를 컴파일할 때 "이 함수에서 x는 지역"이라고 <b>미리</b> 결정해요 — 그 대입이 코드 <b>뒤</b>에 있어도요. 그래서 그 <b>앞줄</b>의 <code>print(x)</code> 는 전역 x를 보는 게 아니라, "아직 값이 안 담긴 <b>지역</b> x"를 읽으려다 <code>UnboundLocalError</code> 가 나요. 단계로 따라가 보세요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 함수 안 대입이 있으면 그 이름은 함수 전체에서 지역(컴파일 시 결정). 앞에서 읽으면 에러.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — global / nonlocal</span>
+    <h2>바깥 이름을 바꾸고 싶다고 선언하기</h2>
+    <p class="lead">정말로 함수 안에서 <b>전역</b> x를 바꾸고 싶다면, <code>global x</code> 로 "이 x는 전역이야"라고 선언해요. 감싼 바깥 함수의 이름을 바꾸려면 <code>nonlocal x</code> 를 쓰고요. 선언하면 파이썬이 지역으로 만들지 않고 그 바깥 방의 이름표를 직접 건드려요. 토글로 세 경우 — 읽기만(전역 봄)·대입(지역됨·에러)·global(전역 수정) — 을 비교하세요.</p>
+    <div class="toggles" id="modeTog">
+      <button data-v="read" class="on">읽기만</button>
+      <button data-v="assign">대입(에러)</button>
+      <button data-v="global">global 선언</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ global/nonlocal = "이 이름은 바깥 방 것"이라 선언. 그래야 바깥을 바꿔요.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>읽기</b>는 LEGB로 바깥까지 찾지만, 함수 안 <b>대입</b>은 그 이름을 <b>함수 전체에서 지역</b>으로 못박아요(컴파일 시점). 그래서 대입 앞에서 읽으면 <code>UnboundLocalError</code>. 바깥 이름을 바꾸려면 <code>global</code>·<code>nonlocal</code> 선언이 필요해요. 그런데 — 함수가 자기 <b>바깥 함수</b>의 이름을 기억하는 이 능력(Enclosing)이, 함수를 값으로 돌려줄 때 아주 강력해져요. 그게 <b>클로저</b>예요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="11-closure.html" style="color:var(--q);font-weight:700">CH 11 · 클로저</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '10 · 대입이 만드는 지역변수');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=180; let s='';
+  s+=PY.codeLine(20,12,'x = 1',{w:90,fs:11});
+  s+=PY.codeLine(20,42,'def f(): print(x)   # 읽기만',{w:280,fs:11});
+  s+=PY.namespace(30,82,{title:'지역 (f)',w:160,color:'var(--v)',rows:[{name:'(x 없음)',val:'—'}]});
+  s+=PY.namespace(270,82,{title:'전역',w:160,rows:[{name:'x',val:'1',hl:true}]});
+  s+=PY.arrow(190,100,270,100,{color:'var(--good)',lw:1.5});
+  s+=`<text x="230" y="92" text-anchor="middle" font-size="9" font-family="monospace" fill="var(--good)">LEGB로 찾음</text>`;
+  document.getElementById('s0').innerHTML=PY.svg(W,H,s,'읽기만');
+  document.getElementById('lab0').innerHTML='함수가 x를 <b>읽기만</b> 하면 지역엔 없으니 LEGB로 전역 x(1)를 찾아 써요. <b style="color:var(--good)">출력: 1</b>.';
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {hi:0, d:'컴파일 시점: 함수 안에 x 대입(2줄)이 있음 → x는 지역으로 확정'},
+    {hi:1, d:'1줄 print(x) 실행 → 지역 x를 읽으려는데 아직 값이 없음'},
+    {hi:2, d:'→ UnboundLocalError (대입은 아직 실행 전인데 이미 지역)'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=200; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,12,'x = 1   # 전역',{w:170,fs:11,dim:true});
+    s+=PY.codeLine(20,46,'def f():',{w:110,fs:11});
+    s+=PY.codeLine(60,76,'print(x)   # 1줄',{w:200,fs:11,color: st.hi===1?'var(--hot)':'var(--muted)'});
+    s+=PY.codeLine(60,106,'x = 2      # 2줄 (대입)',{w:240,fs:11,color: st.hi===0?'var(--hot)':'var(--muted)'});
+    if(st.hi===0) s+=`<text x="330" y="120" font-size="10" font-family="monospace" fill="var(--hot)">← 이 대입 때문에</text>`;
+    if(st.hi===0) s+=`<text x="330" y="90" font-size="10" font-family="monospace" fill="var(--hot)">x는 함수 전체 지역</text>`;
+    if(st.hi>=1){ s+=PY.namespace(250,135,{title:'지역 (f)',w:190,color:st.hi===2?'var(--dead)':'var(--v)',rows:[{name:'x',val:st.hi===2?'(값 없음!)':'지역 예약',hl:st.hi===2}]}); }
+    if(st.hi===2){ s+=`<text x="40" y="170" font-size="11" font-family="monospace" fill="var(--dead)">✕ UnboundLocalError</text>`;
+      s+=`<text x="40" y="186" font-size="8.5" font-family="monospace" fill="var(--dead)">cannot access local variable 'x' where it is not associated with a value</text>`; }
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'대입이 지역');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=`<b style="color:${st.hi===2?'var(--dead)':'var(--hot)'}">${['컴파일','실행 1줄','에러'][i]}</b> — ${st.d}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='read';
+  const tog=document.getElementById('modeTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=190; let s='', code, g_hl=false, g_val='1';
+    if(view==='read'){ code='def f(): return x'; }
+    else if(view==='assign'){ code='def f(): print(x); x = 2'; }
+    else { code='def f(): global x; x = 2'; g_val='2'; g_hl=true; }
+    s+=PY.codeLine(20,14,code,{w:330,fs:11,color: view==='assign'?'var(--dead)':(view==='global'?'var(--good)':'var(--q)')});
+    s+=PY.namespace(30,56,{title:'지역 (f)',w:170,color:'var(--v)',rows:[
+      view==='read'?{name:'(x 없음)',val:'—'}: view==='assign'?{name:'x',val:'값없음!',hl:true}:{name:'(global 선언)',val:'→전역'}
+    ]});
+    s+=PY.namespace(270,56,{title:'전역',w:170,rows:[{name:'x',val:g_val,hl:g_hl}]});
+    if(view==='read'){ s+=PY.arrow(200,80,270,80,{color:'var(--good)',lw:1.4}); s+=`<text x="${W/2}" y="170" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">전역 x=1 읽음 ✓</text>`;
+      document.getElementById('lab2').innerHTML='읽기만 하면 전역 x를 봐요. 정상.'; }
+    else if(view==='assign'){ s+=`<text x="${W/2}" y="170" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">대입 있음 → x 지역화 → 앞 읽기서 UnboundLocalError</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">대입</b>이 있어 x가 지역이 됨 → 앞에서 읽으면 에러. global 선언이 빠진 흔한 실수.'; }
+    else { s+=PY.arrow(200,80,270,80,{color:'var(--good)',lw:1.4}); s+=`<text x="${W/2}" y="170" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">전역 x를 2로 바꿈 ✓</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--good)">global x</b> 선언 → 파이썬이 지역으로 안 만들고 전역 x를 직접 2로 바꿔요.'; }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'global');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">대입은 이름을 지역으로 못박는다</text>`;
+  const rows=[['읽기','LEGB로 바깥까지 찾음','var(--q)'],['함수 안 대입','그 이름은 함수 전체 지역 → 앞 읽기는 에러','var(--hot)'],['global/nonlocal','바깥 방 이름을 직접 바꾸겠다 선언','var(--good)']];
+  rows.forEach((r,idx)=>{ const y=30+idx*26; s+=`<rect x="20" y="${y}" width="${W-40}" height="23" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="32" y="${y+15}" fill="${r[2]}" font-size="10.5" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+15}" fill="var(--ink)" font-size="8.6" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='함수가 바깥 함수의 이름을 기억하면 — 클로저. 다음 챕터.';
+})();
+</script>
+</body>
+</html>

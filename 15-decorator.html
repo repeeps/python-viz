@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 · 데코레이터 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--good)">PART E · 모든 게 객체 — CH 15</div>
+    <h1>데코레이터</h1>
+    <p class="intro">데코레이터는 마법이 아니에요 — <b>클로저(CH11) + 일급 함수(CH14)</b>의 합작일 뿐이죠. 원래 함수를 <b>받아서</b>, 그 앞뒤에 무언가(로그·시간 측정·검사)를 더한 <b>새 함수로 감싸</b> 돌려줘요. 원래 함수는 손대지 않고요. <code>@데코</code> 라는 <code>@</code> 문법은 그저 "<code>함수 = 데코(함수)</code>"의 줄임말 — 즉 이름표를 <b>감싼 함수로 재바인딩</b>하는 거예요(CH04). 그게 전부예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 감싸기</button>
+    <button data-s="1">01 · 호출 흐름</button>
+    <button data-s="2">02 · @는 재바인딩</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Wrapping</span>
+    <h2>원래 함수를 감싼 새 함수</h2>
+    <p class="lead">데코레이터는 함수 <code>greet</code> 를 받아, 그것을 <b>감싸는</b> 새 함수(wrapper)를 만들어 돌려줘요. wrapper는 안에서 원래 <code>greet</code> 를 호출하되, 그 <b>앞뒤</b>에 추가 동작(예: "로그 시작"/"로그 끝")을 넣죠. 원래 <code>greet</code> 코드는 한 줄도 안 바뀌어요 — 그냥 한 겹 포장된 거예요. 선물 포장처럼요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 데코레이터 = 원래 함수를 받아 앞뒤 동작을 더한 wrapper로 감싸 돌려줌.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — The Call Flows Through</span>
+    <h2>호출은 포장을 거쳐 안으로</h2>
+    <p class="lead">감싼 함수를 호출하면 흐름은 이래요: ① wrapper의 <b>앞부분</b> 실행("로그 시작") → ② 안의 <b>원래 함수</b> 실행(진짜 일) → ③ wrapper의 <b>뒷부분</b> 실행("로그 끝"). 호출하는 쪽은 평소처럼 <code>greet()</code> 라고 부를 뿐인데, 자기도 모르게 앞뒤 동작이 따라붙죠. 버튼으로 흐름을 따라가 보세요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 앞부분 → 원래 함수 → 뒷부분. 호출자는 변화를 모른 채 부가 동작을 얻어요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — @ Is Just Rebinding</span>
+    <h2>@데코 = 함수 = 데코(함수)</h2>
+    <p class="lead"><code>@log</code> 을 <code>def greet</code> 위에 붙이는 건 <b>문법 설탕</b>일 뿐이에요. 파이썬은 그걸 <code>greet = log(greet)</code> 로 풀어 실행해요. 즉 <code>log</code> 가 원래 greet을 받아 wrapper를 돌려주고, 이름표 <code>greet</code> 가 이제 그 <b>wrapper를 가리키도록 재바인딩</b>(CH04)되는 거죠. 그래서 이후 <code>greet()</code> 는 wrapper를 부르고, wrapper가 안에서 원래 함수를 부르고요. 토글로 @ 전후의 이름표 변화를 보세요.</p>
+    <div class="toggles" id="atTog">
+      <button data-v="before" class="on">@ 적용 전</button>
+      <button data-v="after">@ 적용 후</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ @데코는 "이름 = 데코(이름)"의 줄임말. 이름표를 wrapper로 재바인딩할 뿐.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>데코레이터</b>는 함수를 받아 앞뒤 동작을 더한 wrapper로 감싸 돌려주는 것 — 클로저(바깥 함수를 기억)와 일급 함수(함수를 주고받음)의 자연스러운 합작이에요. <code>@데코</code> 는 <code>이름 = 데코(이름)</code> 의 줄임말이라, 이름표를 wrapper로 <b>재바인딩</b>하는 게 전부죠. 앞에서 배운 조각들(이름표·재바인딩·클로저·일급 함수)이 한곳에 모인 거예요. 마지막 챕터에서 "모든 게 객체"의 또 다른 얼굴 — 타입이 아니라 능력으로 판단하는 <b>덕타이핑</b> — 을 보고, 전체를 정리해요.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="16-duck-typing.html" style="color:var(--q);font-weight:700">CH 16 · 덕타이핑 + 회고</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '15 · 데코레이터');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=180; let s='';
+  s+=PY.codeLine(20,14,'@log  /  def greet(): ...',{w:260,fs:11});
+  s+=PY.wrap(90,46,{outer:'wrapper (감싼 함수)',inner:'greet (원래 함수·그대로)',before:'로그 시작',after:'로그 끝',w:280,h:120});
+  document.getElementById('s0').innerHTML=PY.svg(W,H,s,'감싸기');
+  document.getElementById('lab0').innerHTML='바깥 <b style="color:var(--v)">wrapper</b>가 안의 <b style="color:var(--good)">원래 greet</b>을 감싸요. 앞뒤에 "로그 시작/끝"을 더하되, greet 코드는 그대로.';
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {a:'in', d:'① wrapper 앞부분 — "로그 시작" 출력'},
+    {a:'inner', d:'② 안의 원래 greet 실행 — 진짜 일'},
+    {a:'out', d:'③ wrapper 뒷부분 — "로그 끝" 출력'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=180; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,12,'greet()  호출',{w:140,fs:11,color:'var(--hot)'});
+    s+=PY.wrap(90,40,{outer:'wrapper',inner:'greet (진짜 일)',before:'로그 시작',after:'로그 끝',active:st.a,w:280,h:124});
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'호출 흐름');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=st.d;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='before';
+  const tog=document.getElementById('atTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=190; let s='';
+    s+=PY.codeLine(20,14, view==='before'?'def greet(): ...':'greet = log(greet)',{w:260,fs:11,color: view==='after'?'var(--hot)':'var(--muted)'});
+    if(view==='before'){
+      s+=PY.nameLabel(60,90,'greet',{}); s+=PY.objBox(250,72,{type:'function',value:'원래 greet',id:'5500',mutable:false,w:150,h:54}); s+=PY.ref(124,104,250,98,{});
+      document.getElementById('lab2').innerHTML='@ 적용 전: 이름표 <code>greet</code>가 <b style="color:var(--good)">원래 함수</b>(id 5500)를 가리켜요.';
+    } else {
+      s+=PY.nameLabel(60,100,'greet',{color:'var(--hot)'});
+      s+=PY.objBox(250,40,{type:'function',value:'원래 greet',id:'5500',mutable:false,w:150,h:46,dim:true});
+      s+=PY.objBox(250,116,{type:'function',value:'wrapper',id:'5900',mutable:false,w:150,h:50,hl:true});
+      s+=PY.ref(124,114,250,140,{color:'var(--hot)'});
+      s+=`<text x="325" y="34" font-size="9" font-family="monospace" fill="var(--faint)">원래 함수(wrapper 안에서 호출됨)</text>`;
+      document.getElementById('lab2').innerHTML='@ 적용 후: <code>greet = log(greet)</code> → 이름표 greet가 이제 <b style="color:var(--hot)">wrapper</b>(id 5900)로 <b>재바인딩</b>. 원래 함수는 wrapper 안에 살아 있어요.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'@ 재바인딩');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">클로저 + 일급 함수의 합작</text>`;
+  const rows=[['데코레이터','함수를 받아 앞뒤 더한 wrapper로 감싸 돌려줌','var(--q)'],['@데코','이름 = 데코(이름) — wrapper로 재바인딩','var(--v)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='타입이 아니라 능력으로 판단 — 마지막, 덕타이핑 + 회고.';
+})();
+</script>
+</body>
+</html>

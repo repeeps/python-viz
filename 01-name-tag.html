@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 · 이름표 붙이기 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--q)">PART A · 이름과 객체 — CH 01</div>
+    <h1>이름표 붙이기</h1>
+    <p class="intro">파이썬에서 <b>대입</b>(=)은 "상자에 값을 담는" 게 아니라 "객체에 <b>이름표</b>를 붙이는" 일이에요. <code>x = [1, 2]</code> 를 쓰면 리스트 객체가 메모리에 생기고, x는 거기 붙은 이름표일 뿐이죠. 그래서 한 객체에 이름표를 <b>여러 개</b> 붙일 수도 있고(<code>y = x</code>), <code>del</code>로 이름표를 <b>뗄</b> 수도 있어요. 이 단순한 그림이 앞으로 나올 모든 함정의 열쇠예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 대입 = 붙이기</button>
+    <button data-s="1">01 · 이름표 여럿</button>
+    <button data-s="2">02 · del = 떼기</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Assignment Is Tagging</span>
+    <h2>대입은 이름표를 붙인다</h2>
+    <p class="lead">한 줄을 단계로 따라가 보세요. <code>x = [1, 2]</code> 가 실행되면 ① 먼저 <b>오른쪽</b>의 리스트 객체가 메모리에 만들어지고, ② 그다음 <b>왼쪽</b>의 이름 x가 그 객체에 이름표로 붙어요. 순서가 중요해요 — 객체가 먼저, 이름은 나중. 이름은 객체를 "담는" 그릇이 아니라 그냥 가리키는 표예요.</p>
+    <div class="ctl" id="play0"></div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ 오른쪽 객체 생성 → 왼쪽 이름표 붙이기. 이름은 객체를 가리킬 뿐.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Many Tags, One Object</span>
+    <h2>한 객체에 이름표 여럿</h2>
+    <p class="lead"><code>y = x</code> 는 새 객체를 만들지 않아요. x가 가리키던 <b>바로 그 객체</b>에 이름표 y를 하나 더 붙일 뿐이죠. <code>z = y</code> 도 마찬가지. 그래서 x·y·z 셋 다 같은 리스트를 가리켜요. 버튼으로 이름표가 늘어나는 걸 보세요 — 객체는 계속 하나뿐이에요. (이게 다음 챕터 "별칭"의 씨앗이에요.)</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ y = x 는 복사가 아니라 이름표 추가. 객체는 하나, 이름표는 여럿.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — del Removes a Tag</span>
+    <h2>del은 객체가 아니라 이름표를 뗀다</h2>
+    <p class="lead">초보자가 흔히 오해하는 것 — <code>del x</code> 는 객체를 지우는 게 아니에요. <b>이름표 x만</b> 떼는 거죠. 다른 이름표(y)가 아직 붙어 있으면 객체는 멀쩡히 살아 있어요. 마지막 이름표마저 떼서 <b>아무도 안 가리키게</b> 되면, 그제서야 파이썬이 객체를 청소해요. 버튼으로 따라가 보세요.</p>
+    <div class="ctl" id="play2"></div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ del = 이름표 떼기. 마지막 이름표가 사라진 객체만 청소됨.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead">대입은 객체에 <b>이름표 붙이기</b>, <code>del</code>은 <b>이름표 떼기</b>예요. 한 객체에 이름표가 여럿일 수 있고, 이름표가 0개가 되면 객체는 청소돼요. 그런데 — 이름표 두 개가 "같은 객체"를 가리키는 것과, 두 객체가 "값이 같은" 것은 다른 얘기죠? 그걸 어떻게 구분할까요? 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="02-is-vs-eq.html" style="color:var(--q);font-weight:700">CH 02 · 같은 객체? 닮은 객체?</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '01 · 이름표 붙이기');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const steps=[
+    {t:'① 오른쪽 먼저', d:'리스트 객체 [1, 2]가 메모리에 만들어짐', obj:true, tag:false},
+    {t:'② 왼쪽 이름표', d:'이름 x를 그 객체에 붙임', obj:true, tag:true}
+  ];
+  let i=0;
+  const play=document.getElementById('play0');
+  play.innerHTML=`<button class="btn" id="prev0">◀ 이전</button><button class="btn" id="next0">다음 ▶</button><span class="note" id="cnt0" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=170; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,16,'x = [1, 2]',{w:130,color:'var(--hot)'});
+    s+=PY.objBox(270,70,{type:'list',value:'[1, 2]',mutable:true,w:120,h:56});
+    if(st.tag){ s+=PY.nameLabel(90,90,'x',{}); s+=PY.ref(136,104,270,98,{}); }
+    else { s+=`<text x="120" y="108" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--faint)">(아직 이름표 없음)</text>`; }
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'대입');
+    document.getElementById('cnt0').textContent=`${i+1} / 2`;
+    document.getElementById('lab0').innerHTML=`<b style="color:var(--hot)">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next0').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev0').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'x = [1, 2]', tags:['x']},
+    {t:'y = x', tags:['x','y']},
+    {t:'z = y', tags:['x','y','z']}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=210; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:120,color:'var(--hot)'});
+    s+=PY.objBox(280,86,{type:'list',value:'[1, 2]',mutable:true,w:120,h:56});
+    st.tags.forEach((t,k)=>{ const ty=58+k*46; s+=PY.nameLabel(70,ty,t,{}); s+=PY.ref(116,ty+14,280,114,{}); });
+    s+=`<text x="340" y="160" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--good)">객체는 계속 하나뿐 · 이름표 ${st.tags.length}개</text>`;
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'이름표 여럿');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=`<b style="color:var(--hot)">${st.t}</b> — 같은 객체에 이름표가 ${st.tags.length}개(${st.tags.join('·')})`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ const steps=[
+    {t:'x = [1, 2]; y = x', tags:['x','y'], gone:false, d:'이름표 두 개가 한 객체에'},
+    {t:'del x', tags:['y'], gone:false, d:'x만 떼어냄 — y가 있으니 객체는 살아있음'},
+    {t:'del y', tags:[], gone:true, d:'마지막 이름표마저 떼면 → 아무도 안 가리킴 → 청소'}
+  ];
+  let i=0;
+  const play=document.getElementById('play2');
+  play.innerHTML=`<button class="btn" id="prev2">◀ 이전</button><button class="btn" id="next2">다음 ▶</button><span class="note" id="cnt2" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=190; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:200,color:'var(--hot)'});
+    s+=PY.objBox(280,76,{type:'list',value:'[1, 2]',mutable:true,w:120,h:56,dim:st.gone});
+    ['x','y'].forEach((t,k)=>{ const ty=58+k*46; const present=st.tags.includes(t);
+      s+=PY.nameLabel(70,ty,t,{detached:!present,dim:!present});
+      if(present) s+=PY.ref(116,ty+14,280,104,{});
+    });
+    if(st.gone) s+=`<text x="340" y="156" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">🧹 청소됨</text>`;
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'del');
+    document.getElementById('cnt2').textContent=`${i+1} / 3`;
+    document.getElementById('lab2').innerHTML=`<b style="color:var(--hot)">${st.t}</b> — ${st.d}`;
+  }
+  document.getElementById('next2').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev2').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">대입=붙이기 · del=떼기</text>`;
+  const rows=[['대입 (=)','객체에 이름표 붙이기 (여럿 가능)','var(--q)'],['del','이름표 떼기 (객체 삭제 아님·0개면 청소)','var(--v)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9.5" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='"같은 객체"와 "값이 같음"은 다르다 — 다음 챕터에서 구분해요.';
+})();
+</script>
+</body>
+</html>

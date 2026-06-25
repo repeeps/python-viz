@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04 · 재바인딩 vs 제자리 변경 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--hot)">PART B · 별칭과 복사 — CH 04</div>
+    <h1>재바인딩 vs 제자리 변경</h1>
+    <p class="intro">파이썬에서 "바꾼다"엔 완전히 다른 두 가지가 있어요. <b>재바인딩</b>(<code>x = [4,5,6]</code>)은 이름표 x를 <b>다른 객체로 옮기는</b> 일 — 원래 객체는 그대로예요. <b>제자리 변경</b>(<code>x.append(3)</code>)은 x가 가리키는 <b>그 객체의 내용을 바꾸는</b> 일 — 객체는 같고(id 유지) 안만 달라지죠. 코드만 보면 둘 다 "x를 바꿨다"처럼 보이지만, 메모리에서 벌어지는 일은 정반대예요. 이 구분이 다음 챕터들 함정의 뿌리예요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · 이름표 옮기기</button>
+    <button data-s="1">01 · 객체 바꾸기</button>
+    <button data-s="2">02 · id로 구분</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — Rebinding Moves the Tag</span>
+    <h2>재바인딩: 이름표를 옮긴다</h2>
+    <p class="lead"><code>x = [1,2]</code> 다음 <code>x = [4,5,6]</code> 을 하면, [1,2]가 [4,5,6]으로 변신하는 게 아니에요. 새 리스트 객체가 따로 만들어지고, 이름표 x가 그쪽으로 <b>옮겨 붙는</b> 거죠. 원래 [1,2] 객체는 손대지 않은 채 그대로 있어요(아무도 안 가리키면 청소). 대입(<code>=</code>)은 늘 이렇게 "이름표 옮기기"예요.</p>
+    <div class="ctl" id="play0"></div>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ x = ... 는 항상 재바인딩(이름표 이동). 원래 객체는 안 건드림.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--good)">Step 01 — Mutating Changes the Object</span>
+    <h2>제자리 변경: 객체 안을 바꾼다</h2>
+    <p class="lead"><code>x.append(3)</code> 이나 <code>x[0] = 9</code> 는 이름표를 옮기지 않아요. x가 가리키는 <b>그 객체의 내용을 직접</b> 바꾸죠. 객체는 같은 자리에 그대로(id 유지), 안의 내용만 달라져요. 가변 객체(리스트·딕트)만 이게 가능해요. 버튼으로 같은 객체 안이 바뀌는 걸 보세요 — 이름표는 한 자리에 가만히 있어요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ .append()·[i]=… 는 제자리 변경(같은 객체). 이름표는 안 움직임.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--v)">Step 02 — Tell Them Apart by id</span>
+    <h2>id가 바뀌면 재바인딩, 그대로면 제자리</h2>
+    <p class="lead">둘을 확실히 구분하는 법: <b>객체의 id</b>를 보면 돼요. <b>재바인딩</b>은 이름표가 다른 객체로 가니 <b>id가 바뀌어요</b>. <b>제자리 변경</b>은 같은 객체를 손보니 <b>id가 그대로</b>죠. 토글로 같은 "결과 [1,2,3]"이 두 방식에서 id가 어떻게 다른지 보세요. 이 차이가 — 같은 객체를 다른 이름도 가리킬 때(별칭) — 사고로 이어져요. 다음 챕터 예고.</p>
+    <div class="toggles" id="cmpTog">
+      <button data-v="rebind" class="on">재바인딩 (x = x + [3])</button>
+      <button data-v="mutate">제자리 (x.append(3))</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ id 바뀜=재바인딩 / id 유지=제자리 변경. 별칭이 있으면 이 차이가 결정적.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>재바인딩</b>(<code>x = …</code>)은 이름표를 새 객체로 옮기고(id 변경, 원래 객체 무사), <b>제자리 변경</b>(<code>x.append</code>·<code>x[i]=…</code>)은 같은 객체 안을 바꿔요(id 유지). 코드 겉모습은 비슷해도 정반대 일이죠. 그런데 — 같은 객체에 이름표가 <b>여럿</b> 붙어 있을 때(별칭) 한 이름표로 제자리 변경을 하면? 다른 이름표에도 그 변화가 보여요. 그게 파이썬 초보의 가장 흔한 버그예요. 다음 챕터.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 → <a href="05-aliasing.html" style="color:var(--q);font-weight:700">CH 05 · 별칭 — 한 객체, 여러 이름</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '04 · 재바인딩 vs 제자리 변경');
+VZ.setupStepper();
+const PY=VZ.PY;
+
+// ===== STEP 0 =====
+(function(){ const steps=[
+    {t:'x = [1, 2]', to:'old'},
+    {t:'x = [4, 5, 6]', to:'new'}
+  ];
+  let i=0;
+  const play=document.getElementById('play0');
+  play.innerHTML=`<button class="btn" id="prev0">◀ 이전</button><button class="btn" id="next0">다음 ▶</button><span class="note" id="cnt0" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=200; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:150,color:'var(--hot)'});
+    s+=PY.nameLabel(50,96,'x',{});
+    const newObj = st.to==='new';
+    s+=PY.objBox(250,60,{type:'list',value:'[1, 2]',id:'4401',mutable:true,w:120,h:50,dim:newObj});
+    s+=PY.objBox(250,130,{type:'list',value:'[4, 5, 6]',id:'4490',mutable:true,w:120,h:50,dim:!newObj});
+    s+=PY.ref(96,110,250, newObj?155:85,{});
+    if(newObj) s+=`<text x="390" y="84" font-size="9.5" font-family="monospace" fill="var(--faint)">옛 객체 그대로</text>`;
+    document.getElementById('s0').innerHTML=PY.svg(W,H,s,'재바인딩');
+    document.getElementById('cnt0').textContent=`${i+1} / 2`;
+    document.getElementById('lab0').innerHTML = i===0
+      ? '<b style="color:var(--hot)">x = [1, 2]</b> — 이름표 x가 첫 리스트(id 4401)에.'
+      : '<b style="color:var(--hot)">x = [4,5,6]</b> — 새 객체(id 4490)가 생기고 x가 그리로 <b>옮겨</b>가요. [1,2]는 변신한 게 아니라 그대로 남아 청소 대상.';
+  }
+  document.getElementById('next0').onclick=()=>{ i=(i+1)%steps.length; render(); };
+  document.getElementById('prev0').onclick=()=>{ i=(i-1+steps.length)%steps.length; render(); };
+  render();
+})();
+
+// ===== STEP 1 =====
+(function(){ const steps=[
+    {t:'x = [1, 2]', val:'[1, 2]'},
+    {t:'x.append(3)', val:'[1, 2, 3]'},
+    {t:'x[0] = 9', val:'[9, 2, 3]'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀ 이전</button><button class="btn" id="next1">다음 ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=170; const st=steps[i]; let s='';
+    s+=PY.codeLine(20,14,st.t,{w:150,color:'var(--good)'});
+    s+=PY.nameLabel(60,80,'x',{}); s+=PY.objBox(230,60,{type:'list',value:st.val,id:'4401',mutable:true,w:150,h:58}); s+=PY.ref(106,94,230,88,{});
+    s+=`<text x="300" y="140" text-anchor="middle" font-size="10.5" font-family="monospace" fill="var(--good)">id 4401 — 계속 같은 객체</text>`;
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'제자리 변경');
+    document.getElementById('cnt1').textContent=`${i+1} / 3`;
+    document.getElementById('lab1').innerHTML=`<b style="color:var(--good)">${st.t}</b> — 같은 객체(id 4401) 안 내용이 ${st.val}로. 이름표 x는 안 움직였어요.`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=Math.min(i+1,steps.length-1); render(); };
+  document.getElementById('prev1').onclick=()=>{ i=Math.max(0,i-1); render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='rebind';
+  const tog=document.getElementById('cmpTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=180; let s='';
+    if(view==='rebind'){
+      s+=PY.codeLine(20,14,'x = x + [3]',{w:150,color:'var(--hot)'});
+      s+=PY.nameLabel(60,80,'x',{}); s+=PY.objBox(230,58,{type:'list',value:'[1, 2, 3]',id:'4490',mutable:true,w:150,h:54}); s+=PY.ref(106,94,230,84,{});
+      s+=PY.chip(300,148,'id: 4401 → 4490 (바뀜)',{color:'var(--hot)',minW:200});
+      document.getElementById('lab2').innerHTML='<code>x + [3]</code>은 <b>새 리스트</b>를 만들고 x를 거기 재바인딩 → <b style="color:var(--hot)">id 바뀜</b>. 원래 객체는 안 변함.';
+    } else {
+      s+=PY.codeLine(20,14,'x.append(3)',{w:150,color:'var(--good)'});
+      s+=PY.nameLabel(60,80,'x',{}); s+=PY.objBox(230,58,{type:'list',value:'[1, 2, 3]',id:'4401',mutable:true,w:150,h:54}); s+=PY.ref(106,94,230,84,{});
+      s+=PY.chip(300,148,'id: 4401 그대로 (유지)',{color:'var(--good)',minW:200});
+      document.getElementById('lab2').innerHTML='<code>.append()</code>은 같은 객체를 제자리 변경 → <b style="color:var(--good)">id 유지</b>. 결과 리스트는 같아 보여도 메모리에선 다른 일.';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'id 비교');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">옮기기 vs 안을 바꾸기</text>`;
+  const rows=[['재바인딩 x = …','이름표를 새 객체로 (id 변경)','var(--hot)'],['제자리 .append/[i]=','그 객체 내용을 바꿈 (id 유지)','var(--good)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="10.5" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="9.5" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='한 객체에 이름표가 여럿이면 제자리 변경이 다 같이 보인다 — 다음, 별칭.';
+})();
+</script>
+</body>
+</html>

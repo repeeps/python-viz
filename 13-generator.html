@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 · 제너레이터 — 파이썬, 눈으로 보기</title>
+<link rel="stylesheet" href="shared/theme.css">
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg">
+<style>
+  .big{font-family:'JetBrains Mono',monospace; font-size:13.5px; color:var(--ink); margin:12px 0 6px; padding:14px 16px; border-radius:14px; background:var(--panel-2); border:1px solid var(--line); line-height:1.6;}
+  .big:empty{display:none;}
+  .ctl{display:flex; align-items:center; gap:10px; margin:10px 0; flex-wrap:wrap;}
+  svg{display:block; width:100%;}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .toggles button{font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);cursor:pointer}
+  .toggles button.on{color:#0b0e14;font-weight:700;background:var(--hot)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel-2);padding:1px 5px;border-radius:5px;font-size:.92em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav" id="topnav"></div>
+
+  <header>
+    <div class="tag" style="color:var(--v)">PART D · 게으른 흐름 — CH 13</div>
+    <h1>제너레이터</h1>
+    <p class="intro">값을 미리 다 만들어 리스트에 쌓아두는 대신, <b>필요할 때 하나씩</b> 만들어 내보내는 함수 — 그게 <b>제너레이터</b>예요. <code>return</code> 대신 <code>yield</code> 를 쓰면, 함수는 값을 하나 내주고 <b>바로 그 자리에서 멈춰요</b>(상태를 그대로 간직한 채). 다음 값을 요청하면 <b>멈췄던 곳에서 재개</b>하죠. 제너레이터는 이터레이터의 한 종류라 1회용이지만, 덕분에 <b>무한 수열</b>도 메모리 걱정 없이 다룰 수 있어요.</p>
+  </header>
+
+  <nav class="stepper" id="stepper">
+    <button data-s="0" class="active">00 · yield는 멈춤</button>
+    <button data-s="1">01 · 멈췄다 재개</button>
+    <button data-s="2">02 · 무한·메모리</button>
+    <button data-s="3">03 · 정리</button>
+  </nav>
+
+  <!-- STEP 0 -->
+  <section class="panel show" data-panel="0">
+    <span class="kicker" style="color:var(--q)">Step 00 — yield Pauses</span>
+    <h2>return은 끝, yield는 멈춤</h2>
+    <p class="lead">보통 함수는 <code>return</code> 하면 <b>끝</b>나고 모든 게 사라져요. 제너레이터는 <code>yield</code> 로 값을 하나 내주고 <b>그 자리에서 일시정지</b>해요 — 지역 변수와 진행 위치를 <b>그대로 간직한 채</b>로요. 죽지 않고 "잠든" 상태죠. 다음 값을 달라고 하면 거기서 깨어나 이어가요. <code>def</code> 안에 <code>yield</code> 가 하나라도 있으면 그 함수는 제너레이터가 돼요.</p>
+    <div class="scene" id="s0"></div>
+    <p class="big" id="lab0"></p>
+    <p class="note" style="margin-top:6px">→ yield = 값 하나 내주고 상태를 간직한 채 멈춤(잠듦). return처럼 끝나지 않아요.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel" data-panel="1">
+    <span class="kicker" style="color:var(--hot)">Step 01 — Pause and Resume</span>
+    <h2>멈췄던 곳에서 이어간다</h2>
+    <p class="lead"><code>count()</code> 가 <code>n</code> 을 yield하고 멈춰요. <code>next()</code> 로 다음 값을 요청하면 — <b>멈췄던 yield 다음 줄</b>부터 깨어나 <code>n += 1</code> 을 하고 다시 yield에서 멈추죠. 지역 변수 <code>n</code> 이 호출 사이에 <b>기억</b>되는 게 핵심이에요(보통 함수면 매번 초기화될 텐데). 버튼으로 멈춤·재개를 따라가 보세요.</p>
+    <div class="ctl" id="play1"></div>
+    <div class="scene" id="s1"></div>
+    <p class="big" id="lab1"></p>
+    <p class="note" style="margin-top:6px">→ 재개는 멈춘 다음 줄부터. 지역 상태(n)가 호출 사이에 보존돼요.</p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel" data-panel="2">
+    <span class="kicker" style="color:var(--good)">Step 02 — Infinite, Tiny Memory</span>
+    <h2>무한 수열도 메모리 걱정 없이</h2>
+    <p class="lead">"모든 짝수"처럼 <b>끝없는</b> 수열을 리스트로 만들면? 불가능해요 — 메모리가 터지죠. 제너레이터는 값을 미리 안 만들고 <b>요청할 때 하나씩</b>만 내주니, 무한 수열도 문제없어요. 지금 필요한 하나만 메모리에 있거든요. 토글로 비교하세요 — 리스트는 전부를 미리 담지만(<b>즉시·전부</b>), 제너레이터는 그때그때(<b>게으르게·하나씩</b>).</p>
+    <div class="toggles" id="memTog">
+      <button data-v="list" class="on">리스트 (전부 미리)</button>
+      <button data-v="gen">제너레이터 (하나씩)</button>
+    </div>
+    <div class="scene" id="s2"></div>
+    <p class="big" id="lab2"></p>
+    <p class="note" style="margin-top:6px">→ 리스트=전부 미리 만들어 메모리에 / 제너레이터=요청 시 하나씩(무한도 OK).</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel" data-panel="3">
+    <span class="kicker" style="color:var(--good)">Step 03 — Takeaways</span>
+    <h2>정리</h2>
+    <p class="lead"><b>제너레이터</b>는 <code>yield</code> 로 값을 하나 내주고 상태를 간직한 채 멈췄다, 다음 요청에 재개하는 함수예요. 이터레이터의 한 종류라 1회용이지만, 값을 미리 다 안 만들어 <b>무한 수열·거대 데이터</b>를 작은 메모리로 다룰 수 있죠(게으른 평가). 여기까지 — 우리는 함수를 변수에 담고, 돌려주고(클로저), yield로 멈추는 특별한 함수까지 봤어요. 이 모든 게 가능한 건 파이썬에서 <b>함수도 객체</b>이기 때문이에요. 마지막 PART에서 그 의미를 봐요.</p>
+    <div class="scene" id="s3"></div>
+    <p class="big" id="lab3"></p>
+    <p class="note" style="margin-top:14px">→ 다음 PART E → <a href="14-first-class.html" style="color:var(--q);font-weight:700">CH 14 · 함수도 값이다</a></p>
+  </section>
+
+  <p class="foot">// 코드 없는 직관 입문 · <a href="index.html">목차</a></p>
+</div>
+
+<script src="shared/lib.js"></script>
+<script src="shared/lib-py.js"></script>
+<script>
+VZ.mountTopnav('#topnav', '13 · 제너레이터');
+VZ.setupStepper();
+const PY=VZ.PY;
+const LINES=['n = 0','while True:','  yield n','  n += 1'];
+
+// ===== STEP 0 =====
+(function(){ const W=460,H=190; let s='';
+  s+=PY.codeLine(20,14,'def count():  →  0, 1, 2, 3 … 무한히 yield',{w:340,fs:11});
+  s+=PY.genFrame(120,52,{lines:LINES,at:2,locals:[{k:'n',v:'0'}],state:'paused',w:230});
+  document.getElementById('s0').innerHTML=PY.svg(W,H,s,'yield 멈춤');
+  document.getElementById('lab0').innerHTML='<code>yield n</code>에서 값 0을 내주고 <b style="color:var(--hot)">멈춰요</b>. n=0과 위치를 간직한 채 잠든 상태 — return처럼 끝난 게 아니에요.';
+})();
+
+// ===== STEP 1 =====
+(function(){ const frames=[
+    {at:2,n:0,out:'0',d:'yield n → 0 내주고 멈춤'},
+    {at:3,n:0,out:null,d:'next(): 재개 → n += 1 실행'},
+    {at:2,n:1,out:'1',d:'다시 yield n → 1 내주고 멈춤'},
+    {at:3,n:1,out:null,d:'next(): 재개 → n += 1'},
+    {at:2,n:2,out:'2',d:'yield n → 2 …'}
+  ];
+  let i=0;
+  const play=document.getElementById('play1');
+  play.innerHTML=`<button class="btn" id="prev1">◀</button><button class="btn" id="next1">next() ▶</button><span class="note" id="cnt1" style="margin-left:8px"></span>`;
+  function render(){ const W=460,H=200; const f=frames[i]; let s='';
+    s+=PY.genFrame(60,18,{lines:LINES,at:f.at,locals:[{k:'n',v:String(f.n)}],state: f.out!=null?'paused':'running',w:240});
+    if(f.out!=null) s+=PY.chip(380,60,'→ '+f.out,{color:'var(--good)',minW:60,h:30});
+    document.getElementById('s1').innerHTML=PY.svg(W,H,s,'멈춤·재개');
+    document.getElementById('cnt1').textContent=`${i+1} / ${frames.length}`;
+    document.getElementById('lab1').innerHTML=`${f.d}${f.out!=null?` · <b style="color:var(--good)">${f.out} 나옴</b> (n=${f.n} 기억됨)`:''}`;
+  }
+  document.getElementById('next1').onclick=()=>{ i=(i+1)%frames.length; render(); };
+  document.getElementById('prev1').onclick=()=>{ i=(i-1+frames.length)%frames.length; render(); };
+  render();
+})();
+
+// ===== STEP 2 =====
+(function(){ let view='list';
+  const tog=document.getElementById('memTog');
+  tog.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; view=b.dataset.v; tog.querySelectorAll('button').forEach(x=>{const on=x.dataset.v===view;x.classList.toggle('on',on);x.style.background=on?'var(--hot)':'var(--panel-2)';x.style.color=on?'#0b0e14':'var(--muted)';}); render(); });
+  function render(){ const W=460,H=180; let s='';
+    if(view==='list'){
+      s+=PY.codeLine(20,14,'evens = [0,2,4, … ∞]  ✕',{w:240,fs:11,color:'var(--dead)'});
+      s+=PY.seq(40,70,[0,2,4,6,8],{title:'전부 미리 메모리에'});
+      s+=`<text x="300" y="92" font-size="13" font-family="monospace" fill="var(--dead)">… 무한 → 💥</text>`;
+      s+=`<text x="${W/2}" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--dead)">끝없는 수열을 리스트로 = 메모리 폭발</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--dead)">리스트</b>는 모든 값을 <b>미리</b> 만들어 담아요. 무한 수열은 담을 수가 없죠.';
+    } else {
+      s+=PY.codeLine(20,14,'evens = even_gen()  (게으름)',{w:260,fs:11,color:'var(--good)'});
+      s+=PY.seq(40,70,['0','?','?','?','?'],{cursor:0,title:'지금 필요한 하나만'});
+      s+=`<text x="300" y="92" font-size="11" font-family="monospace" fill="var(--good)">다음은 요청 시 생성</text>`;
+      s+=`<text x="${W/2}" y="150" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--good)">메모리엔 하나뿐 → 무한 수열도 거뜬</text>`;
+      document.getElementById('lab2').innerHTML='<b style="color:var(--good)">제너레이터</b>는 요청할 때 하나씩만 만들어요. 메모리엔 지금 값 하나뿐 → 무한도 OK(게으른 평가).';
+    }
+    document.getElementById('s2').innerHTML=PY.svg(W,H,s,'무한·메모리');
+  }
+  render();
+})();
+
+// ===== STEP 3 =====
+(function(){ const W=460,H=110;
+  let s=`<text x="${W/2}" y="24" text-anchor="middle" font-size="12.5" font-family="monospace" font-weight="700" fill="var(--hot)">필요할 때 하나씩</text>`;
+  const rows=[['yield','값 하나 내주고 상태 간직한 채 멈춤·재개','var(--q)'],['게으름','미리 안 만듦 → 무한·거대 데이터도 작은 메모리','var(--good)']];
+  rows.forEach((r,idx)=>{ const y=40+idx*30; s+=`<rect x="20" y="${y}" width="${W-40}" height="26" rx="6" fill="var(--panel)" stroke="${r[2]}" stroke-width="1.1"/><text x="34" y="${y+17}" fill="${r[2]}" font-size="11" font-family="monospace" font-weight="700">${r[0]}</text><text x="${W-30}" y="${y+17}" fill="var(--ink)" font-size="8.8" font-family="monospace" text-anchor="end">${r[1]}</text>`; });
+  document.getElementById('s3').innerHTML=PY.svg(W,H,s,'정리');
+  document.getElementById('lab3').innerHTML='이 모든 게 가능한 건 함수도 객체라서 — 다음 PART.';
+})();
+</script>
+</body>
+</html>
